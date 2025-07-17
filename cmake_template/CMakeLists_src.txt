@@ -22,3 +22,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_link_options(${MY_TARGET_NAME} PRIVATE -mwindows -static -static-libgcc -static-libstdc++)
     target_link_libraries(${MY_TARGET_NAME} PRIVATE gdiplus gdi32 imm32 msimg32 ole32 oleaut32 winmm uuid)
 endif()
+
+if(MSVC)
+    target_compile_options(${MY_TARGET_NAME} PRIVATE
+        /source-charset:utf-8
+    )
+endif()
