@@ -4,6 +4,14 @@ All notable changes to the "ege" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.5.0
+
+- Add internationalization (i18n) support
+- Automatic language detection based on VS Code's display language
+- Support for English and Chinese (中文) languages
+- Added missing command `ege.setupProjectWithEgeSrc` for setting up project with EGE source code
+- Improved user experience with localized messages and interface
+
 ## 0.4.14
 
 - fix c++ CMake template, add arg: `/Zc:__cplusplus`

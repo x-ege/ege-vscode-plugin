@@ -12,6 +12,7 @@ import fs = require('fs-extra');
 import utils = require('./utils');
 import glob = require('glob');
 import { ege } from './ege';
+import { t } from './i18n';
 
 const VS_WHERE = 'C:/Program Files (x86)/Microsoft Visual Studio/Installer/vswhere.exe';
 
@@ -181,8 +182,8 @@ export class Compilers {
     async chooseCompilerByUser(): Promise<CompilerItem | undefined> {
         const platformName = os.platform();
         if (platformName !== 'win32' && platformName !== 'cygwin') { /// 目前仅支持 windows
-            vscode.window.showErrorMessage(`EGE: Platform ${platformName} is not supported by now!`)
-            console.log(`EGE: Platform ${platformName} is not supported by now!`);
+            vscode.window.showErrorMessage(t('message.platformNotSupported', platformName));
+            console.log(t('message.platformNotSupported', platformName));
             return;
         }
 
@@ -190,9 +191,9 @@ export class Compilers {
 
         if (comp.length === 0) {
             if (utils.isWindows()) {
-                ege.showErrorBox("未找到可支持的编译器! ege vscode plugin 仅目前支持 Visual Studio (2017/2019/2022 或 更新版本), 请安装后重启", "OK");
+                ege.showErrorBox(t('message.compilerNotFound.windows'), t('button.ok'));
             } else {
-                ege.showErrorBox("未找到可支持的编译器! ege vscode plugin 需要 mingw-w64 的支持, 请安装后重启", "OK");
+                ege.showErrorBox(t('message.compilerNotFound.other'), t('button.ok'));
             }
             return;
         } else if (comp.length === 1) {
@@ -201,7 +202,7 @@ export class Compilers {
         }
 
         return vscode.window.showQuickPick(comp, {
-            title: "EGE: Choose the specific compiler to install.",
+            title: t('title.chooseCompiler'),
             canPickMany: false,
             // matchOnDescription: TYPE_LATEST_VISUAL_STUDIO
         });
@@ -213,7 +214,7 @@ export class Compilers {
         } else {
             this.selectedCompiler = null;
             if (compiler != null) {
-                vscode.window.showErrorMessage("EGE: Unrecognized compiler " + (compiler ? compiler.path : ""));
+                vscode.window.showErrorMessage("EGE: " + t('message.unrecognizedCompiler', compiler ? compiler.path : ""));
             }
         }
     }
@@ -283,7 +284,7 @@ export class Compilers {
                 this.performInstallMinGW64();
                 break;
             default:
-                vscode.window.showInformationMessage("EGE: Compiler choosed: " + (this.selectedCompiler as CompilerItem).path);
+                vscode.window.showInformationMessage(t('message.compilerChoose') + (this.selectedCompiler as CompilerItem).path);
                 this.performInstallVisualStudio(installationPath);
                 break;
         }
@@ -332,7 +333,7 @@ export class Compilers {
                     fs.copySync(this.installerLibsPath, tmpLibsDir);
                     this.performCopyByUser(easyCopyDir);
                 } else {
-                    vscode.window.showErrorMessage(`EGE: Invalid dir ${this.installerIncludePath} or ${srcLibsDir}`);
+                    vscode.window.showErrorMessage("EGE: " + t('message.invalidDir', this.installerIncludePath, srcLibsDir));
                 }
             }
         }
@@ -385,7 +386,7 @@ pause
     }
 
     reportNotSupported() {
-        vscode.window.showErrorMessage("EGE: Not supported by now! (Only Visual Studio is supported by now)");
+        vscode.window.showErrorMessage("EGE: " + t('message.notSupportedYet'));
     }
 
     performInstallDevCpp() {

@@ -8,6 +8,9 @@ A VSCode plugin to help the configuration of [ege](https://xege.org). Enjoy it!
 - Build and run single cpp files with EGE support.(`graphics.h`)
 - Add EGE CMake Project Template for `C/C++` source.
 - Support MacOS/Linux (By `mingw-w64` and `wine`)
+- **Internationalization (i18n)**: Automatic language detection based on VS Code's display language
+  - English (default)
+  - 中文 (Chinese) - automatically selected when VS Code's display language is Chinese
 
 ## Deps
 

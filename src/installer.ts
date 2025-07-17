@@ -14,6 +14,7 @@ import { RequestMsg } from './msg';
 import compilers = require('./compilers');
 import { ege } from './ege';
 import { isWindows } from './utils';
+import { t } from './i18n';
 
 interface RequestUrlDataResult {
     content?: string;
@@ -56,7 +57,7 @@ export class EGEInstaller {
         if (fs.existsSync(this.egeBundleDir) && fs.existsSync(path.join(this.egeBundleDir, "include", "graphics.h"))) {
             console.log("EGE: Find builtin bundle at: " + this.egeBundleDir);
         } else {
-            vscode.window.showErrorMessage("EGE: builtin bundle not found at: " + this.egeBundleDir);
+            vscode.window.showErrorMessage("EGE: " + t('message.builtinBundleNotFound', this.egeBundleDir));
         }
     }
 
@@ -164,7 +165,7 @@ export class EGEInstaller {
 
             if (!exists) {
                 if (!this.egeDownloadedZipFile) {
-                    vscode.window.showErrorMessage("获取最新版本的 EGE 版本号失败, 你是不是断网了?", "OK");
+                    vscode.window.showErrorMessage(t('message.getLatestVersionFailed'), t('button.ok'));
                     this.progressHandle?.reject();
                     return;
                 }
@@ -218,7 +219,7 @@ export class EGEInstaller {
         if (value) {
             compilerHandle.setCompiler(value);
             compilerHandle.performInstall(value, this.egeInstallerDir, () => {
-                vscode.window.showInformationMessage("EGE: Install finished!");
+                vscode.window.showInformationMessage("EGE: " + t('message.installFinished'));
             });
         } else {
             ege.printError("未找到合适的编译器!");
@@ -252,7 +253,7 @@ export class EGEInstaller {
 
         const installDirContents = fs.readdirSync(this.egeInstallerDir);
         if (installDirContents.length === 0) {
-            vscode.window.showErrorMessage("EGE: No content in the installation dir at: " + this.egeInstallerDir);
+            vscode.window.showErrorMessage("EGE: " + t('message.noContentInInstallDir', this.egeInstallerDir));
             return;
         }
 
@@ -268,7 +269,7 @@ export class EGEInstaller {
                 if (!validInnerDir) { // pick first
                     validInnerDir = newInstallDir;
                 } else {
-                    vscode.window.showErrorMessage("EGE: Multi installation dir found, pick the first: " + validInnerDir);
+                    vscode.window.showErrorMessage("EGE: " + t('message.multiInstallDirFound', validInnerDir));
                 }
             }
         });
@@ -325,7 +326,7 @@ export class EGEInstaller {
         /// remove caches.
         if (this.egeTempDir && this.egeTempDir.length !== 0 && fs.pathExistsSync(this.egeTempDir)) {
             fs.removeSync(this.egeTempDir);
-            vscode.window.showInformationMessage("EGE: Cleanup ege plugin cache - Done!");
+            vscode.window.showInformationMessage("EGE: " + t('message.cleanupCacheDone'));
         }
 
         if (this.progressHandle) {

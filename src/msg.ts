@@ -4,6 +4,7 @@
  */
 
 import vscode = require('vscode');
+import { t } from './i18n';
 
 /// End in 1 minute.
 const LONG_REQUEST_TIMEOUT_VALUE = 60000;
@@ -48,11 +49,11 @@ export class RequestMsg {
             this.progressInstance = progress;
             this.progressToken = token;
             token.onCancellationRequested(this.onCancellationRequested.bind(this));
-            progress.report({ increment: 1, message: msgPrefix + "start!" });
+            progress.report({ increment: 1, message: msgPrefix + t('message.requestStart') });
 
             if (this.intervalHandle) {
                 console.error(msgPrefix + "intervalHandle = " + this.intervalHandle);
-                vscode.window.showErrorMessage(msgPrefix + "Last job not finished, try to stop it...\n");
+                vscode.window.showErrorMessage(msgPrefix + t('message.lastJobNotFinished') + "\n");
                 clearInterval(this.intervalHandle);
                 this.intervalHandle = null;
             }
@@ -101,7 +102,7 @@ export class RequestMsg {
             this.progressToken = null;
         }, (reason) => {
             console.log(this.msgPrefix + " Killing request.");
-            vscode.window.showErrorMessage(this.msgPrefix + "process cancelled! Reason: " + reason);
+            vscode.window.showErrorMessage(this.msgPrefix + t('message.processCancelled', reason));
         });
     }
 

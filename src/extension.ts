@@ -9,17 +9,22 @@ import { buildCurrentActiveFile, unregisterSingleFileBuilder } from './buildSing
 import utils = require('./utils')
 import { ege } from './ege';
 import { setupProject } from './setupProject';
+import { t } from './i18n';
 
 function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "ege" is now active!');
+	console.log(t('message.extensionActivated'));
 
 	EGEInstaller.registerContext(context);
 
 	context.subscriptions.push(vscode.commands.registerCommand('ege.setupProject', async () => {
 		setupProject();
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('ege.setupProjectWithEgeSrc', async () => {
+		setupProject(true);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('ege.setupGlobal', () => {
@@ -53,7 +58,7 @@ function activate(context: vscode.ExtensionContext) {
 			const egeInstance = EGEInstaller.instance();
 			if (egeInstance) {
 				if (!utils.validateInstallationOfDirectory(egeInstance.egeInstallerDir)) {
-					ege.showWarningBox(`EGE没有初始化过, 正在执行初始化, 初始化完毕之后请重试...`, "哦");
+					ege.showWarningBox(t('message.egeNotInitialized'), t('button.ok'));
 					/// 没有执行过安装, 执行一次.
 					egeInstance.egeDownloadedZipFile = undefined;
 					if (await egeInstance.performInstall()) {
@@ -61,7 +66,7 @@ function activate(context: vscode.ExtensionContext) {
 					}
 
 					if (!utils.validateInstallationOfDirectory(egeInstance.egeInstallerDir)) {
-						ege.printError(`解压文件失败!!! 请检查网络连接, 也可以手动下载: ${egeInstance.egeDownloadUrl} 并解压到 ${egeInstance.egeInstallerDir}`);
+						ege.printError(t('message.extractionFailed', egeInstance.egeDownloadUrl, egeInstance.egeInstallerDir));
 					} else {
 						await buildCurrentActiveFile(fileToRun);
 					}
@@ -71,9 +76,9 @@ function activate(context: vscode.ExtensionContext) {
 			}
 		} else {
 			if (fileToRun) {
-				ege.showErrorBox("编译失败: 找不到文件 " + fileToRun);
+				ege.showErrorBox(t('message.buildFailed.fileNotFound') + fileToRun);
 			} else {
-				ege.showErrorBox("编译失败: 未选中任何文件!");
+				ege.showErrorBox(t('message.buildFailed.noFileSelected'));
 			}
 		}
 	}));
@@ -86,7 +91,7 @@ function activate(context: vscode.ExtensionContext) {
 		if (EGEInstaller.instance().egeInstallerDir && fs.existsSync(EGEInstaller.instance().egeInstallerDir)) {
 			utils.openDirectoryInFileExplorer(EGEInstaller.instance().egeInstallerDir);
 		} else {
-			vscode.window.showErrorMessage(`EGE: Cache dir ${EGEInstaller.instance().egeInstallerDir} does not exist.`)
+			vscode.window.showErrorMessage(t('message.cacheDirNotExist', EGEInstaller.instance().egeInstallerDir));
 		}
 	}));
 }

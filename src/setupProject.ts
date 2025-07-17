@@ -8,6 +8,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ege } from './ege';
 import { copyDirRecursiveIfNotExist, copyIfNotExist } from './utils';
+import { t } from './i18n';
 
 export function setupProject(usingSource?: boolean) {
     const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -17,11 +18,11 @@ export function setupProject(usingSource?: boolean) {
         const workspaceDir = workspaceFolder.uri.fsPath;
         const cmakeListsPath = vscode.Uri.file(`${workspaceDir}/CMakeLists.txt`);
         if (fs.existsSync(cmakeListsPath.fsPath)) {
-            ege.printInfo("CMakeLists.txt 已存在!");
+            ege.printInfo(t('message.cmakeListsExists'));
         } else {
             const cmakeListsTemplatePath = path.join(__dirname, `../cmake_template/${usingSource ? "CMakeLists_src.txt" : "CMakeLists_lib.txt"}`);
             fs.copyFileSync(cmakeListsTemplatePath, cmakeListsPath.fsPath);
-            ege.printInfo("CMakeLists.txt 已创建!");
+            ege.printInfo(t('message.cmakeListsCreated'));
 
             /// 搜索一下项目目录下是否有别的 cpp 文件, 如果没有, 则拷贝 main.cpp
 
@@ -38,7 +39,7 @@ export function setupProject(usingSource?: boolean) {
                 /// 拷贝 main.cpp
                 copyIfNotExist(path.join(__dirname, `../cmake_template/main.cpp`), `${workspaceDir}/main.cpp`);
             } else {
-                ege.printInfo("项目目录下已存在 cpp 文件, 跳过创建 main.cpp!");
+                ege.printInfo(t('message.skipCreateMainCpp'));
             }
         }
 

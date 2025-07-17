@@ -8,6 +8,7 @@ import os = require('os');
 import vscode = require('vscode');
 import fs = require('fs-extra');
 import path = require('path');
+import { t } from './i18n';
 import { ege } from './ege';
 import iconv = require('iconv-lite')
 
@@ -29,13 +30,13 @@ export function openDirectoryInFileExplorer(dir: string) {
     } else if (osName === 'linux') {
         openExplorerCommand = `xdg-open "${dir}"`;
     } else {
-        vscode.window.showErrorMessage(`EGE: Open dir is not supported on ${dir}`);
+        vscode.window.showErrorMessage("EGE: " + t('message.openDirNotSupported', dir));
     }
 
     if (openExplorerCommand) {
         cp.exec(openExplorerCommand, (err) => {
             if (err)
-                vscode.window.showInformationMessage(`EGE: Open dir ${dir} failed: ${err}`)
+                vscode.window.showInformationMessage("EGE: " + t('message.openDirFailed', dir, err.toString()));
         });
     }
 }

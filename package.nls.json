@@ -1,0 +1,12 @@
+{
+	"command.setupProject": "EGE: Setup with this project",
+	"command.setupProjectWithSource": "EGE: Setup ege project with EGE source code in current workspace",
+	"command.setupGlobal": "EGE: Setup in global scope",
+	"command.cleanupCaches": "EGE: Cleanup caches",
+	"command.openCacheDir": "EGE: Open cache dir",
+	"command.buildAndRunCurrentFile": "EGE: Build and run current file",
+	"title.egeConfiguration": "ege configuration",
+	"config.updateUrl.description": "An url to get latest version of EGE (default: https://xege.org/download/ege-latest-version)",
+	"config.showEditorContextMenu.description": "Show 'ege' in editor context menu",
+	"config.explorerContextMenu.description": "Show 'ege' in explorer context menu"
+}

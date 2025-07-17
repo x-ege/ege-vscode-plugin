@@ -1,0 +1,12 @@
+{
+	"command.setupProject": "EGE: 在当前工作区设置 ege 项目",
+	"command.setupProjectWithSource": "EGE: 在当前工作区设置带有 EGE 源代码的 ege 项目",
+	"command.setupGlobal": "EGE: 全局设置",
+	"command.cleanupCaches": "EGE: 清理缓存",
+	"command.openCacheDir": "EGE: 打开缓存目录",
+	"command.buildAndRunCurrentFile": "EGE: 构建并运行当前文件",
+	"title.egeConfiguration": "ege 配置",
+	"config.updateUrl.description": "获取最新版本 EGE 的 URL（默认：https://xege.org/download/ege-latest-version）",
+	"config.showEditorContextMenu.description": "在编辑器上下文菜单中显示 'ege'",
+	"config.explorerContextMenu.description": "在资源管理器上下文菜单中显示 'ege'"
+}
