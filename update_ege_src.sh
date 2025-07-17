@@ -11,7 +11,11 @@ fi
 XEGE_DIR=$(realpath "$XEGE_DIR")
 
 if [[ ! -e "$XEGE_DIR/.git" ]]; then
-    echo "The xege repository is not initialized. Please clone it first."
+    echo "Usage: $0 [xege_dir]"
+    echo "Where [xege_dir] is the path to the xege repository."
+    echo "If not provided, it defaults to '../xege'."
+    echo "Please ensure that the xege repository is initialized and contains the necessary files."
+    echo "Current XEGE_DIR: $XEGE_DIR does not appear to be a valid git repository."
     exit 1
 fi
 
