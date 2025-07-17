@@ -382,3 +382,30 @@ export function asyncRunShellCommand(command: string, args?: string[] | null, sh
     }));
 }
 
+export function copyIfNotExist(src: string, dst: string) {
+    if (!fs.existsSync(dst)) {
+        /// 如果中间目录不存在, 则创建
+        const dstDir = path.dirname(dst);
+        if (!fs.existsSync(dstDir)) {
+            fs.mkdirpSync(dstDir);
+        }
+        fs.copyFileSync(src, dst);
+        ege.printInfo(`${dst} 已创建!`);
+    } else {
+        ege.printInfo(`${dst} 已存在, 跳过创建!`);
+    }
+}
+
+export function copyDirRecursiveIfNotExist(srcDir: string, dstDir: string) {
+    const files = fs.readdirSync(srcDir, { encoding: 'utf-8' });
+    for (const file of files) {
+        const srcPath = path.join(srcDir, file);
+        const dstPath = path.join(dstDir, file);
+        if (fs.statSync(srcPath).isDirectory()) {
+            fs.ensureDirSync(dstPath);
+            copyDirRecursiveIfNotExist(srcPath, dstPath);
+        } else {
+            copyIfNotExist(srcPath, dstPath);
+        }
+    }
+}

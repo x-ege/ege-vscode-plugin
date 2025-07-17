@@ -7,23 +7,9 @@ import * as vscode from 'vscode';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ege } from './ege';
+import { copyDirRecursiveIfNotExist, copyIfNotExist } from './utils';
 
-
-function copyIfNotExists(src: string, dst: string) {
-    if (!fs.existsSync(dst)) {
-        /// 如果中间目录不存在, 则创建
-        const dstDir = path.dirname(dst);
-        if (!fs.existsSync(dstDir)) {
-            fs.mkdirpSync(dstDir);
-        }
-        fs.copyFileSync(src, dst);
-        ege.printInfo(`${dst} 已创建!`);
-    } else {
-        ege.printInfo(`${dst} 已存在, 跳过创建!`);
-    }
-}
-
-export function setupProject() {
+export function setupProject(internalTemplatePath: string = "project_with_libs") {
     const workspaceFolders = vscode.workspace.workspaceFolders;
 
     for (const workspaceFolder of workspaceFolders || []) {
@@ -33,7 +19,7 @@ export function setupProject() {
         if (fs.existsSync(cmakeListsPath.fsPath)) {
             ege.printInfo("CMakeLists.txt 已存在!");
         } else {
-            const cmakeListsTemplatePath = path.join(__dirname, "../cmake_template/CMakeLists.txt");
+            const cmakeListsTemplatePath = path.join(__dirname, `../cmake_template/${internalTemplatePath}/CMakeLists.txt`);
             fs.copyFileSync(cmakeListsTemplatePath, cmakeListsPath.fsPath);
             ege.printInfo("CMakeLists.txt 已创建!");
 
@@ -50,23 +36,14 @@ export function setupProject() {
 
             if (!hasCppFile) {
                 /// 拷贝 demo.cpp
-                copyIfNotExists(path.join(__dirname, "../cmake_template/demo.cpp"), `${workspaceDir}/demo.cpp`);
+                copyIfNotExist(path.join(__dirname, `../cmake_template/${internalTemplatePath}/demo.cpp`), `${workspaceDir}/demo.cpp`);
             } else {
                 ege.printInfo("项目目录下已存在 cpp 文件, 跳过创建 demo.cpp!");
             }
         }
 
-        /// 如果根目录没有 .vscode/settings.json, 拷贝一个过去
-        copyIfNotExists(path.join(__dirname, "../cmake_template/.vscode/settings.json"), `${workspaceDir}/.vscode/settings.json`);
-
-        /// 如果根目录没有 .vscode/tasks.json, 拷贝一个过去
-        copyIfNotExists(path.join(__dirname, "../cmake_template/.vscode/tasks.json"), `${workspaceDir}/.vscode/tasks.json`);
-
-        /// 如果根目录没有 .vscode/launch.json, 拷贝一个过去
-        copyIfNotExists(path.join(__dirname, "../cmake_template/.vscode/launch.json"), `${workspaceDir}/.vscode/launch.json`);
-
-        /// 如果根目录没有 .vscode/c_cpp_properties.json, 拷贝一个过去
-        copyIfNotExists(path.join(__dirname, "../cmake_template/.vscode/c_cpp_properties.json"), `${workspaceDir}/.vscode/c_cpp_properties.json`);
+        // 递归拷贝(不覆盖) cmake_template/project_with_libs/.vscode 目录下的所有内容到工作区根目录
+        copyDirRecursiveIfNotExist(path.join(__dirname, `../cmake_template/${internalTemplatePath}/.vscode`), `${workspaceDir}/.vscode`);
 
         /// 如果根目录没有 ege 目录, 拷贝一个过去
         const egeDir = `${workspaceDir}/ege`;
