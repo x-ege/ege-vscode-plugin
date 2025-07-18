@@ -11,6 +11,7 @@ A VSCode plugin to help the configuration of [ege](https://xege.org). Enjoy it!
 - **Internationalization (i18n)**: Automatic language detection based on VS Code's display language
   - English (default)
   - 中文 (Chinese) - automatically selected when VS Code's display language is Chinese
+- Generate project templates based on the EGE source code. The source mode will be periodically updated to the latest EGE code, making it easier to discover issues.
 
 ## Deps
 
