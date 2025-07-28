@@ -18,10 +18,10 @@
             "group": "build",
             "problemMatcher": "$gcc",
             "windows": {
-                "command": "cmd",
+                "command": "powershell",
                 "args": [
-                    "/c",
-                    "(if not exist build (mkdir build) ) & (cd build && cmake ..)"
+                    "-Command",
+                    "if (!(Test-Path build)) { mkdir build }; cd build; cmake .."
                 ],
                 "options": {
                     "cwd": "${workspaceFolder}"
@@ -43,10 +43,10 @@
             "group": "build",
             "problemMatcher": "$gcc",
             "windows": {
-                "command": "cmd",
+                "command": "powershell",
                 "args": [
-                    "/c",
-                    "(if not exist \"build\" (mkdir build && cd build && cmake ..) ) & cmake --build \"${workspaceFolder}/build\" --parallel %NUMBER_OF_PROCESSORS%"
+                    "-Command",
+                    "if (!(Test-Path build)) { mkdir build; cd build; cmake .. }; cmake --build build --parallel $env:NUMBER_OF_PROCESSORS"
                 ],
                 "options": {
                     "cwd": "${workspaceFolder}"
@@ -68,10 +68,10 @@
             "group": "build",
             "problemMatcher": "$gcc",
             "windows": {
-                "command": "cmd",
+                "command": "powershell",
                 "args": [
-                    "/c",
-                    "(if not exist \"build\" (mkdir build && cd build && cmake ..) ) & cmake --build \"${workspaceFolder}/build\" --config Release --parallel %NUMBER_OF_PROCESSORS%"
+                    "-Command",
+                    "if (!(Test-Path build)) { mkdir build; cd build; cmake .. }; cmake --build build --config Release --parallel $env:NUMBER_OF_PROCESSORS"
                 ],
                 "options": {
                     "cwd": "${workspaceFolder}"
@@ -124,10 +124,10 @@
                 "Build Project (Debug)"
             ],
             "windows": {
-                "command": "cmd",
+                "command": "powershell",
                 "args": [
-                    "/c",
-                    "ege-demo.exe"
+                    "-Command",
+                    ".\\ege-demo.exe"
                 ],
                 "options": {
                     "cwd": "${workspaceFolder}/build/Debug"
@@ -152,10 +152,10 @@
                 "Build Project (Release)"
             ],
             "windows": {
-                "command": "cmd",
+                "command": "powershell",
                 "args": [
-                    "/c",
-                    "ege-demo.exe"
+                    "-Command",
+                    ".\\ege-demo.exe"
                 ],
                 "options": {
                     "cwd": "${workspaceFolder}/build/Release"
@@ -177,10 +177,10 @@
             "group": "build",
             "problemMatcher": "$gcc",
             "windows": {
-                "command": "cmd",
+                "command": "powershell",
                 "args": [
-                    "/c",
-                    "git clean -fdx build || rmdir /s /q build"
+                    "-Command",
+                    "if (Get-Command git -ErrorAction SilentlyContinue) { git clean -fdx build } else { Remove-Item -Recurse -Force build -ErrorAction SilentlyContinue }"
                 ],
                 "options": {
                     "cwd": "${workspaceFolder}"
