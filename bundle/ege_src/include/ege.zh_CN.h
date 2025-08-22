@@ -71,6 +71,14 @@
 #endif
 #endif
 
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS
+#endif
+
+#ifndef __STDC_CONSTANT_MACROS
+#define __STDC_CONSTANT_MACROS
+#endif
+
 #include "ege/stdint.h"
 
 #if defined(EGE_FOR_AUTO_CODE_COMPLETETION_ONLY)
@@ -255,12 +263,14 @@ enum graphics_errors
     grInvalidFontNum     = -14,         ///< 无效字体编号
     grInvalidVersion     = -18,         ///< 版本不兼容
 
-    grException          = 0x10,        ///< EGE异常
-    grParamError         = 0x11,        ///< 参数错误
-    grInvalidRegion      = 0x12,        ///< 无效区域
-    grOutOfMemory        = 0x13,        ///< 内存不足
-    grNullPointer        = 0x14,        ///< 空指针
-    grAllocError         = 0x15,        ///< 分配错误
+    grException          = 16,          ///< EGE异常
+    grParamError         = 17,          ///< 参数错误
+    grInvalidRegion      = 18,          ///< 无效区域
+    grOutOfMemory        = 19,          ///< 内存不足
+    grNullPointer        = 20,          ///< 空指针
+    grAllocError         = 21,          ///< 分配错误
+    grInvalidFileFormat  = 22,          ///< 无效文件格式
+    grUnsupportedFormat  = 23,          ///< 不支持的格式
     grInvalidMemory      = 0xCDCDCDCD   ///< 无效内存
 };
 
@@ -900,7 +910,8 @@ enum mouse_flag_e
     mouse_flag_x1       = 0x008,    ///< 鼠标X1键被按下
     mouse_flag_x2       = 0x010,    ///< 鼠标X2键被按下
     mouse_flag_shift    = 0x100,    ///< Shift键被按下
-    mouse_flag_ctrl     = 0x200     ///< Ctrl键被按下
+    mouse_flag_ctrl     = 0x200,    ///< Ctrl键被按下
+    mouse_flag_doubleclick = 0x1000    ///< 双击事件
 };
 
 /**
@@ -3682,6 +3693,46 @@ int  EGEAPI textheight(char    c, PCIMAGE pimg = NULL);
 int  EGEAPI textheight(wchar_t c, PCIMAGE pimg = NULL);
 
 /**
+ * @brief 使用 GDI+ 精确测量文本字符串的显示宽高
+ * @param text 要测量的文本字符串
+ * @param width 返回文本显示宽度（像素）
+ * @param height 返回文本显示高度（像素）
+ * @param pimg 目标图像指针，NULL 表示当前 EGE 窗口
+ * @note 本函数使用 GDI+ 精确测量，适用于 ege_ 系列文本绘制函数，结果受当前字体设置影响
+ */
+void EGEAPI measuretext(const char* text, float* width, float* height, PCIMAGE pimg = NULL);
+
+/**
+ * @brief 使用 GDI+ 精确测量文本字符串的显示宽高（Unicode 版本）
+ * @param text 要测量的文本字符串
+ * @param width 返回文本显示宽度（像素）
+ * @param height 返回文本显示高度（像素）
+ * @param pimg 目标图像指针，NULL 表示当前 EGE 窗口
+ * @note 本函数使用 GDI+ 精确测量，适用于 ege_ 系列文本绘制函数，结果受当前字体设置影响
+ */
+void EGEAPI measuretext(const wchar_t* text, float* width, float* height, PCIMAGE pimg = NULL);
+
+/**
+ * @brief 使用 GDI+ 精确测量单个字符的显示宽高
+ * @param c 要测量的字符
+ * @param width 返回字符显示宽度（像素）
+ * @param height 返回字符显示高度（像素）
+ * @param pimg 目标图像指针，NULL 表示当前 EGE 窗口
+ * @note 本函数使用 GDI+ 精确测量，适用于 ege_ 系列文本绘制函数，结果受当前字体设置影响
+ */
+void EGEAPI measuretext(char c, float* width, float* height, PCIMAGE pimg = NULL);
+
+/**
+ * @brief 使用 GDI+ 精确测量单个字符的显示宽高（Unicode 版本）
+ * @param c 要测量的字符
+ * @param width 返回字符显示宽度（像素）
+ * @param height 返回字符显示高度（像素）
+ * @param pimg 目标图像指针，NULL 表示当前 EGE 窗口
+ * @note 本函数使用 GDI+ 精确测量，适用于 ege_ 系列文本绘制函数，结果受当前字体设置影响
+ */
+void EGEAPI measuretext(wchar_t c, float* width, float* height, PCIMAGE pimg = NULL);
+
+/**
  * @brief 在指定位置输出文本（支持浮点坐标和ARGB颜色）
  * @param x 输出位置的x坐标（浮点数）
  * @param y 输出位置的y坐标（浮点数）
@@ -4871,6 +4922,10 @@ int     EGEAPI kbhitEx(int flag);
  * @see key_code_e
  */
 int     EGEAPI keystate(int key);
+int     EGEAPI keypress(int key);
+int     EGEAPI keyrelease(int key);
+int     EGEAPI keyrepeat(int key);
+
 
 /**
  * @brief 清空按键消息缓存区
