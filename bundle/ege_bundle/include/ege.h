@@ -71,6 +71,14 @@
 #endif
 #endif
 
+#ifndef __STDC_LIMIT_MACROS
+#define __STDC_LIMIT_MACROS
+#endif
+
+#ifndef __STDC_CONSTANT_MACROS
+#define __STDC_CONSTANT_MACROS
+#endif
+
 #include "ege/stdint.h"
 
 #if defined(EGE_FOR_AUTO_CODE_COMPLETETION_ONLY)
@@ -101,6 +109,20 @@
 #       define EGE_CDECL  __cdecl
 #   else
 #       define EGE_CDECL  __cdecl
+#   endif
+#endif
+
+#ifndef EGE_ENUM
+#   ifdef _MSC_VER
+#       if (_MSC_VER >= 1700) // VS2012 and later
+#           define EGE_ENUM(enum_name, enum_base_type) enum enum_name : enum_base_type
+#       else
+#           define EGE_ENUM(enum_name, enum_base_type) enum enum_name
+#       endif
+#   elif __cplusplus >= 201103L // C++11
+#       define EGE_ENUM(enum_name, enum_base_type) enum enum_name : enum_base_type
+#   else
+#       define EGE_ENUM(enum_name, enum_base_type) enum enum_name
 #   endif
 #endif
 
@@ -360,7 +382,7 @@ struct ege_colpoint
  * Provides commonly used color constants, defined based on web-safe color standards
  * Color values use RGB format and can be used directly in drawing functions
  */
-enum COLORS
+EGE_ENUM(COLORS, color_t)
 {
     ALICEBLUE            = EGERGB(0xF0, 0xF8, 0xFF),
     ANTIQUEWHITE         = EGERGB(0xFA, 0xEB, 0xD7),
@@ -3688,6 +3710,50 @@ int  EGEAPI textheight(char    c, PCIMAGE pimg = NULL);
 int  EGEAPI textheight(wchar_t c, PCIMAGE pimg = NULL);
 
 /**
+ * @brief Get display width and height of text string using GDI+ precision measurement
+ * @param text Text string to measure
+ * @param width Pointer to receive text display width (pixels)
+ * @param height Pointer to receive text display height (pixels)
+ * @param pimg Target image pointer, NULL means current ege window
+ * @note Uses GDI+ for precise measurement, suitable for ege_ text rendering functions. 
+ *       Result is affected by current font settings
+ */
+void EGEAPI measuretext(const char* text, float* width, float* height, PCIMAGE pimg = NULL);
+
+/**
+ * @brief Get display width and height of text string using GDI+ precision measurement (Unicode version)
+ * @param text Text string to measure
+ * @param width Pointer to receive text display width (pixels)
+ * @param height Pointer to receive text display height (pixels)
+ * @param pimg Target image pointer, NULL means current ege window
+ * @note Uses GDI+ for precise measurement, suitable for ege_ text rendering functions. 
+ *       Result is affected by current font settings
+ */
+void EGEAPI measuretext(const wchar_t* text, float* width, float* height, PCIMAGE pimg = NULL);
+
+/**
+ * @brief Get display width and height of single character using GDI+ precision measurement
+ * @param c Character to measure
+ * @param width Pointer to receive character display width (pixels)
+ * @param height Pointer to receive character display height (pixels)
+ * @param pimg Target image pointer, NULL means current ege window
+ * @note Uses GDI+ for precise measurement, suitable for ege_ text rendering functions. 
+ *       Result is affected by current font settings
+ */
+void EGEAPI measuretext(char c, float* width, float* height, PCIMAGE pimg = NULL);
+
+/**
+ * @brief Get display width and height of single character using GDI+ precision measurement (Unicode version)
+ * @param c Character to measure
+ * @param width Pointer to receive character display width (pixels)
+ * @param height Pointer to receive character display height (pixels)
+ * @param pimg Target image pointer, NULL means current ege window
+ * @note Uses GDI+ for precise measurement, suitable for ege_ text rendering functions. 
+ *       Result is affected by current font settings
+ */
+void EGEAPI measuretext(wchar_t c, float* width, float* height, PCIMAGE pimg = NULL);
+
+/**
  * @brief Output text at specified position (supports floating-point coordinates and ARGB colors)
  * @param x X coordinate of output position (floating-point)
  * @param y Y coordinate of output position (floating-point)
@@ -5173,10 +5239,12 @@ private:
     PVOID m_dwCallBack; ///< Callback handle
 };
 
-int           EGEAPI ege_compress  (void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen);
-int           EGEAPI ege_compress2 (void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen, int level);
-int           EGEAPI ege_uncompress(void *dest, unsigned long *destLen, const void *source, unsigned long sourceLen);
-unsigned long EGEAPI ege_uncompress_size(const void *source, unsigned long sourceLen);
+uint32_t EGEAPI ege_compress_bound(uint32_t dataSize);
+int      EGEAPI ege_compress (void* compressData, uint32_t* compressSize, const void* data, uint32_t size);
+int      EGEAPI ege_compress2(void* compressData, uint32_t* compressSize, const void* data, uint32_t size, int level);
+
+int      EGEAPI ege_uncompress(void* buffer, uint32_t* bufferSize, const void* compressData, uint32_t compressSize);
+uint32_t EGEAPI ege_uncompress_size(const void* compressData, uint32_t compressSize);
 
 }
 
