@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 21.x]
+        node-version: [18.x, 22.x]
 
     steps:
     - uses: actions/checkout@v4
@@ -24,9 +24,15 @@ jobs:
 
     - name: Build
       run: |
-        npm install
+        if [ -f package-lock.json ]; then
+          npm ci
+        else
+          npm install
+        fi
         npx tsc
     - name: Install VSCE
+      if: matrix.node-version == '22.x'
       run: npm install -g vsce
     - name: Build VSIX
+      if: matrix.node-version == '22.x'
       run: vsce package

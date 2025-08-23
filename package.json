@@ -135,4 +135,8 @@
 		"https": "^1.0.0",
 		"iconv-lite": "^0.6.3"
 	}
+	,
+	"overrides": {
+		"minimatch": "3.1.2"
+	}
 }
