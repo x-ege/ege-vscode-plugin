@@ -24,7 +24,11 @@ jobs:
 
     - name: Build
       run: |
-        npm ci
+        if [ -f package-lock.json ]; then
+          npm ci
+        else
+          npm install
+        fi
         npx tsc
     - name: Install VSCE
       run: npm install -g vsce
