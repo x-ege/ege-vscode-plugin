@@ -31,6 +31,8 @@ jobs:
         fi
         npx tsc
     - name: Install VSCE
+      if: matrix.node-version == '22.x'
       run: npm install -g vsce
     - name: Build VSIX
+      if: matrix.node-version == '22.x'
       run: vsce package
