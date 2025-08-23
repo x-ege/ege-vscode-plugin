@@ -4,6 +4,15 @@ All notable changes to the "ege" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.7.0
+
+- 将 ege 更新为更新的 2025 版本， 带来了相机相关 feature. 
+- 插件将定期更新以同步 Github 上 ege 的版本.
+
+## 0.6.0
+
+- 支持新的 CMake 模板: ege 源码嵌入项目
+
 ## 0.5.0
 
 - Add internationalization (i18n) support
