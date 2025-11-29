@@ -62,24 +62,28 @@ export class SingleFileBuilderWin32 extends SingleFileBuilder {
         let extraIncludeDir = null;
         let extraLibsDir: string | null = null;
 
-        // version 通常是年份 (2015, 2017, 2019, 2022)，但 VS2026 的目录名是 "18"
+        // version 通常是年份 (2015, 2017, 2019, 2022)，但 VS2026 的安装目录名是 "18"
+        // 所以 VS2026 的 version 值是 18，而不是 2026
         const vsVersion = compilerItem.version;
         let cppStandard = 'c++11';
         if (vsVersion >= 2017 || vsVersion === 18) {
-            /// vs2017, vs2019, vs2022, vs2026 (目录名为18)
+            /// vs2017, vs2019, vs2022, vs2026 (version=18)
             cppStandard = 'c++17';
         } else if (vsVersion >= 2015) {
             /// vs2015
             cppStandard = 'c++14';
         }
 
+        // 将 version 映射到 lib 目录名（VS2026 的 version 是 18，但 lib 目录是 vs2026）
+        const libDirVersion = vsVersion === 18 ? 2026 : vsVersion;
+
         if (compilerItem.version > 0) {
             extraIncludeDir = path.join(installerDir, 'include');
             const libDir = path.join(installerDir, 'lib');
-            extraLibsDir = path.join(libDir, `vs${compilerItem.version}`);
+            extraLibsDir = path.join(libDir, `vs${libDirVersion}`);
             if (!fs.existsSync(extraLibsDir)) {
                 console.log(`EGE: path "${extraLibsDir}" does not exist, set to default`);
-                extraLibsDir = path.join(libDir, 'vs2019'); // 目前最新是这个.
+                extraLibsDir = path.join(libDir, 'vs2022'); // fallback 到 vs2022
             }
         }
 
