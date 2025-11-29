@@ -73,6 +73,12 @@
 					"default": true,
 					"description": "%config.explorerContextMenu.description%",
 					"scope": "resource"
+				},
+				"ege.downloadFromOfficial": {
+					"type": "boolean",
+					"default": false,
+					"description": "%config.downloadFromOfficial.description%",
+					"scope": "resource"
 				}
 			}
 		},

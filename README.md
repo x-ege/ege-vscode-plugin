@@ -15,7 +15,7 @@ A VSCode plugin to help the configuration of [ege](https://xege.org). Enjoy it!
 
 ## Deps
 
-- Windows: Visual Studio `2017`/`2019`/`2022`/`20XX+`
+- Windows: Visual Studio `2017`/`2019`/`2022`/`2026+`
 - MacOS: `mingw-w64`, `wine-stable` (wine64)
   - You can install via `brew install mingw-w64 wine-stable`
 - Linux: `mingw-w64`, `wine64`
@@ -36,8 +36,13 @@ You can define some options like below:
     "ege.update_url": "", 
     "ege.showEditorContextMenu": true, // Show 'ege' in editor context menu
     "ege.explorerContextMenu": true, // Show 'ege' in explorer context menu
+    "ege.downloadFromOfficial": false // Download EGE from official website instead of using the builtin version
 }
 ```
+
+### Configuration Details
+
+- **`ege.downloadFromOfficial`**: By default, the plugin uses the builtin EGE library (tested and stable). If you want to download the latest version from the official website (<https://xege.org>), set this option to `true`. Note that the official download may not always be stable or compatible with the plugin.
 
 ## MileStone
 

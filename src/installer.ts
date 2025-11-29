@@ -62,40 +62,22 @@ export class EGEInstaller {
     }
 
     async performInstall(needDownload?: boolean): Promise<boolean | undefined> {
+        // 检查是否配置了从官网下载
+        const config = vscode.workspace.getConfiguration('ege');
+        const downloadFromOfficial = config.get<boolean>('downloadFromOfficial', false);
+
         if (fs.existsSync(this.egeInstallerDir)) {
             if (isWindows()) {
-                const quickPicks = [
-                    {
-                        label: "Use builtin EGE(24.04)",
-                        description: "使用本插件内置的EGE(24.04)完成安装 (推荐)",
-                        picked: true
-                    },
-                    {
-                        label: "Download the latest version from https://xege.org",
-                        description: "从官网下载最新版本并安装",
-                        picked: false
-                    }];
-
-                const value = await vscode.window.showQuickPick(quickPicks, {
-                    title: "EGE: Existing installation detected, choose actions you want",
-                    canPickMany: false
-                });
-
-                if (value) {
-                    const index = quickPicks.indexOf(value);
-
-                    if (index >= 0) {
-                        this.clearPluginCache();
-
-                        /// pass true to trigger download.
-                        await this.performInstall(index === 1);
-                    } else {
-                        console.log("EGE: PerformInstall cancelled");
-                        return;
-                    }
-                } else {
-                    ege.showInfoBox("EGE: 安装已取消!");
+                // 如果配置了从官网下载，直接清理缓存并下载
+                if (downloadFromOfficial) {
+                    this.clearPluginCache();
+                    await this.performInstall(true);
+                    return;
                 }
+
+                // 默认：直接使用内置版本，重新安装
+                this.clearPluginCache();
+                await this.performInstall(false);
                 return;
             } else {
                 ege.printInfo("正在非 Windows 系统上执行编译...");

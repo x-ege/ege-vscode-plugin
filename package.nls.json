@@ -8,5 +8,6 @@
 	"title.egeConfiguration": "ege configuration",
 	"config.updateUrl.description": "An url to get latest version of EGE (default: https://xege.org/download/ege-latest-version)",
 	"config.showEditorContextMenu.description": "Show 'ege' in editor context menu",
-	"config.explorerContextMenu.description": "Show 'ege' in explorer context menu"
+	"config.explorerContextMenu.description": "Show 'ege' in explorer context menu",
+	"config.downloadFromOfficial.description": "Download EGE from official website (https://xege.org) instead of using the builtin version. Enable this option only if you need the latest version from the official website."
 }

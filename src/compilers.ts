@@ -24,6 +24,7 @@ const TYPE_VS2015 = 'vs2015';
 const TYPE_VS2017 = 'vs2017';
 const TYPE_VS2019 = 'vs2019';
 const TYPE_VS2022 = 'vs2022';
+const TYPE_VS2026 = 'vs2026';
 
 /// will try auto detect.
 const TYPE_LATEST_VISUAL_STUDIO = 'vs_latest';
@@ -272,6 +273,7 @@ export class Compilers {
             case TYPE_VS2017:
             case TYPE_VS2019:
             case TYPE_VS2022:
+            case TYPE_VS2026:
             case TYPE_LATEST_VISUAL_STUDIO:
                 this.performInstallVisualStudio(installationPath);
                 break;
