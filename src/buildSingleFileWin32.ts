@@ -62,11 +62,14 @@ export class SingleFileBuilderWin32 extends SingleFileBuilder {
         let extraIncludeDir = null;
         let extraLibsDir: string | null = null;
 
+        // version 通常是年份 (2015, 2017, 2019, 2022)，但 VS2026 的目录名是 "18"
+        const vsVersion = compilerItem.version;
         let cppStandard = 'c++11';
-        if (compilerItem.version >= 2019) {
-            /// vs2019, vs2022
+        if (vsVersion >= 2017 || vsVersion === 18) {
+            /// vs2017, vs2019, vs2022, vs2026 (目录名为18)
             cppStandard = 'c++17';
-        } else if (compilerItem.version >= 2015) {
+        } else if (vsVersion >= 2015) {
+            /// vs2015
             cppStandard = 'c++14';
         }
 
@@ -108,7 +111,7 @@ export class SingleFileBuilderWin32 extends SingleFileBuilder {
         let executionCharset = '';          // ANSI (Unuse)
         let executionCharsetCommand = '';   // '/execution-charset:' + executionCharset;
 
-        const buildCommand = `call "${cmdTool}" ${arch} && cl /nodefaultlib:"MSVCRT" /MDd ${defineConsole} ${extraIncludeCommand} /std:${cppStandard} ${sourceCharsetCommand} ${executionCharsetCommand} /EHsc "${filePath}" /link ${extraLibsCommand}`;
+        const buildCommand = `call "${cmdTool}" ${arch} && cl /nodefaultlib:"MSVCRT" /MDd ${defineConsole} ${extraIncludeCommand} /std:${cppStandard} /Zc:__cplusplus ${sourceCharsetCommand} ${executionCharsetCommand} /EHsc "${filePath}" /link ${extraLibsCommand}`;
 
         const logMsg = `执行编译指令: ${buildCommand}`;
         ege.printWarning(logMsg);
