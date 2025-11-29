@@ -66,22 +66,19 @@ export class EGEInstaller {
         const config = vscode.workspace.getConfiguration('ege');
         const downloadFromOfficial = config.get<boolean>('downloadFromOfficial', false);
 
+        // 如果已有安装，清理后重新安装
         if (fs.existsSync(this.egeInstallerDir)) {
             if (isWindows()) {
-                // 如果配置了从官网下载，直接清理缓存并下载
-                if (downloadFromOfficial) {
-                    this.clearPluginCache();
-                    await this.performInstall(true);
-                    return;
-                }
-
-                // 默认：直接使用内置版本，重新安装
                 this.clearPluginCache();
-                await this.performInstall(false);
-                return;
+                // 根据配置决定下载源，不再递归调用
             } else {
                 ege.printInfo("正在非 Windows 系统上执行编译...");
             }
+        }
+
+        // 如果 needDownload 未指定，则使用配置决定
+        if (needDownload === undefined) {
+            needDownload = downloadFromOfficial;
         }
 
         if (this.progressHandle && this.progressHandle.progressInstance) {
