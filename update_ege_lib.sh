@@ -85,15 +85,15 @@ declare -a COPY_MAPPING_SRC=(
 
     lib/macOS
     lib/mingw-w64-debian
-    lib/devcpp/libgraphics.a
+    lib/mingw64/libgraphics.a
+    
+    lib/vs2026
     lib/vs2022
     lib/vs2019
     lib/vs2017
 
-    lib/vs2015/x86/graphics.lib
-    lib/vs2015/x64/graphics.lib
-    lib/vs2010/x86/graphics.lib
-    lib/vs2010/x64/graphics.lib
+    lib/vs2010/x86
+    lib/vs2010/x64
 )
 
 declare -a COPY_MAPPING_DST=(
@@ -101,15 +101,15 @@ declare -a COPY_MAPPING_DST=(
 
     lib/macOS
     lib/mingw-w64-debian
-    lib/mingw64/mingw-w64-gcc-8.1.0-x86_64/libgraphics.a
+    lib/mingw64/libgraphics.a
+
+    lib/vs2026
     lib/vs2022
     lib/vs2019
     lib/vs2017
 
-    lib/vs2015/graphics.lib
-    lib/vs2015/amd64/graphics.lib
-    lib/vs2010/graphics.lib
-    lib/vs2010/amd64/graphics.lib
+    lib/vs2010
+    lib/vs2010/amd64
 )
 
 # 这里确保一下 SRC 和 DST 长度一致
