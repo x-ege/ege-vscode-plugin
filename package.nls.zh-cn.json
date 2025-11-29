@@ -8,5 +8,6 @@
 	"title.egeConfiguration": "ege 配置",
 	"config.updateUrl.description": "获取最新版本 EGE 的 URL（默认：https://xege.org/download/ege-latest-version）",
 	"config.showEditorContextMenu.description": "在编辑器上下文菜单中显示 'ege'",
-	"config.explorerContextMenu.description": "在资源管理器上下文菜单中显示 'ege'"
+	"config.explorerContextMenu.description": "在资源管理器上下文菜单中显示 'ege'",
+	"config.downloadFromOfficial.description": "从官网 (https://xege.org) 下载 EGE 而不是使用内置版本。仅当你需要官网最新版本时才启用此选项。"
 }

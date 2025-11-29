@@ -4,6 +4,19 @@ All notable changes to the "ege" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 1.0.0
+
+- 大版本更新: 内置的 EGE 升级至 25.11
+- 新增 Visual Studio 2026 支持
+- 新增配置项 `ege.downloadFromOfficial`：支持配置是否从官网下载 EGE（默认使用内置版本）
+- 移除安装时的版本选择弹窗，默认使用内置版本，提升用户体验
+- EGE 25.11 新特性:
+  - 新增颜色类型 `color_type` 枚举，支持 PRGB32/ARGB32/RGB32
+  - 新增 `image_convertcolor()` 函数用于图像颜色类型转换
+  - 新增 `keypress()`/`keyrelease()`/`keyrepeat()` 键盘输入查询函数
+  - 相机模块增强：支持查询设备支持的分辨率
+  - 图像处理改用预乘 alpha 格式提升渲染性能
+
 ## 0.7.0
 
 - 将 ege 更新为更新的 2025 版本， 带来了相机相关 feature. 

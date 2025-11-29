@@ -15,7 +15,7 @@
 
 ## 依赖项
 
-- Windows: Visual Studio `2017`/`2019`/`2022`/`20XX+`
+- Windows: Visual Studio `2017`/`2019`/`2022`/`2026+`
 - MacOS: `mingw-w64`, `wine-stable` (wine64)
   - 您可以通过 `brew install mingw-w64 wine-stable` 安装
 - Linux: `mingw-w64`, `wine64`
@@ -34,9 +34,14 @@
 {
     "ege.update_url": "https://xege.org/download/ege-latest-version",
     "ege.showEditorContextMenu": true,
-    "ege.explorerContextMenu": true
+    "ege.explorerContextMenu": true,
+    "ege.downloadFromOfficial": false // 从官网下载 EGE 而不是使用内置版本
 }
 ```
+
+### 配置说明
+
+- **`ege.downloadFromOfficial`**: 默认情况下，插件使用内置的 EGE 库（经过测试且稳定）。如果您想从官网 (<https://xege.org>) 下载最新版本，请将此选项设置为 `true`。注意：官网下载的版本可能不总是稳定或与插件兼容。
 
 ## 命令
 
