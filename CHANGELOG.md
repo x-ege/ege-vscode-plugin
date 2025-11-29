@@ -4,6 +4,10 @@ All notable changes to the "ege" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 1.0.0
+
+- 大版本更新: 内置的 ege 升级至 25.11
+
 ## 0.7.0
 
 - 将 ege 更新为更新的 2025 版本， 带来了相机相关 feature. 
