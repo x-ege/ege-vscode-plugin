@@ -10,9 +10,8 @@ DST_DIR="$THIS_DIR/bundle/ege_bundle"
 
 # Default values
 DEFAULT_XEGE_LIB_DIR="../xege-libs"
-# By default we skip downloading the archive. Pass -f or --force-download to
-# force a fresh download (disable skipping).
-SKIP_DOWNLOAD=1
+
+SKIP_DOWNLOAD=0
 
 # Parse arguments: first non-flag is XEGE_LIB_DIR; support --skip-download/-n
 # to explicitly request skipping, or -f/--force-download to force download
@@ -86,7 +85,7 @@ declare -a COPY_MAPPING_SRC=(
     lib/macOS
     lib/mingw-w64-debian
     lib/mingw64/libgraphics.a
-    
+
     lib/vs2026
     lib/vs2022
     lib/vs2019
