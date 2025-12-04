@@ -4,6 +4,10 @@ All notable changes to the "ege" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 1.0.1
+
+- fix: 修复 alpha 图像混合错误的问题: <https://github.com/x-ege/xege/pull/347>
+
 ## 1.0.0
 
 - 大版本更新: 内置的 EGE 升级至 25.11
