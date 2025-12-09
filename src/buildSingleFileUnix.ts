@@ -37,7 +37,7 @@ export class SingleFileBuilderUnix extends SingleFileBuilder {
         if (defineConsole.length > 0) {
             defineConsole = `-D${defineConsole}`;
         }
-        return `${SingleFileBuilderUnix.mingw64Compiler} -D_FORTIFY_SOURCE=0 ${argStr} -lgraphics64 -lgdiplus -lgdi32 -limm32 -lmsimg32 -lole32 -loleaut32 -lwinmm -luuid -mwindows -static ${defineConsole} -I"${EGEInstaller.instance().egeInstallerDir}/include" -L"${EGEInstaller.instance().egeInstallerDir}/lib/${this.osLibDir}" -o ${path.basename(argStr, path.extname(argStr))}.exe`;
+        return `${SingleFileBuilderUnix.mingw64Compiler} -D_FORTIFY_SOURCE=0 ${argStr} -lgraphics -lgdiplus -lgdi32 -limm32 -lmsimg32 -lole32 -loleaut32 -lwinmm -luuid -mwindows -static ${defineConsole} -I"${EGEInstaller.instance().egeInstallerDir}/include" -L"${EGEInstaller.instance().egeInstallerDir}/lib/${this.osLibDir}" -o ${path.basename(argStr, path.extname(argStr))}.exe`;
     }
 
     async buildCurrentActiveFile(fileToRun: string): Promise<void> {

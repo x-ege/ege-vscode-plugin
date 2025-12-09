@@ -4,6 +4,10 @@ All notable changes to the "ege" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 1.0.2
+
+- 修正单文件编译在 GCC 下的错误
+
 ## 1.0.1
 
 - fix: 修复 alpha 图像混合错误的问题: <https://github.com/x-ege/xege/pull/347>

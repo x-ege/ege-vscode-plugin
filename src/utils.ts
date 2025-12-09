@@ -15,9 +15,9 @@ import iconv = require('iconv-lite')
 const libsDirArray = [
     'graphics.lib',
     'amd64/graphics.lib',
-    'amd64/graphics64.lib',
+    'amd64/graphics.lib',
     'x86/graphics.lib',
-    'x64/graphics64.lib',
+    'x64/graphics.lib',
 ];
 
 export function openDirectoryInFileExplorer(dir: string) {
