@@ -4,6 +4,10 @@ All notable changes to the "ege" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 1.0.3
+
+- 修正 vscode 项目模板的一些小问题
+
 ## 1.0.2
 
 - 修正单文件编译在 GCC 下的错误

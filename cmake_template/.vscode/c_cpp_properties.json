@@ -51,12 +51,16 @@
             "cStandard": "c11",
             "cppStandard": "c++17",
             "compilerPath": "${default}",
+            "defines": [
+                "SHOW_CONSOLE=1",
+                "_CRT_SECURE_NO_WARNINGS=1",
+                "NOMINMAX=1"
+            ],
             "compilerArgs": [
                 "/Zc:__cplusplus"
             ],
             "includePath": [
                 "${myDefaultIncludePath}",
-                "SHOW_CONSOLE=1"
             ],
             "configurationProvider": "ms-vscode.cmake-tools"
         }
