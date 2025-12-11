@@ -89,13 +89,15 @@ jobs:
 
     - name: Publish to VS Code Marketplace
       if: steps.validate_tag.outputs.should_publish == 'true'
+      env:
+        VSCE_PAT: ${{ secrets.MS_STORE_TOKEN }}
       run: |
         if [ "${{ steps.validate_tag.outputs.is_stable_release }}" == "true" ]; then
           echo "Publishing as stable release to VS Code Marketplace..."
-          vsce publish -p ${{ secrets.MS_STORE_TOKEN }}
+          vsce publish -p $VSCE_PAT
         else
           echo "Publishing as pre-release to VS Code Marketplace..."
-          vsce publish --pre-release -p ${{ secrets.MS_STORE_TOKEN }}
+          vsce publish --pre-release -p $VSCE_PAT
         fi
 
     - name: Create GitHub Release
