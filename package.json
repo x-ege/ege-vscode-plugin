@@ -119,6 +119,7 @@
 		"fileDirname": "echo ${fileDirname}"
 	},
 	"devDependencies": {
+		"@types/minimatch": "^3.0.2",
 		"@types/decompress": "^4.2.4",
 		"@types/fs-extra": "^9.0.13",
 		"@types/glob": "^7.1.4",
