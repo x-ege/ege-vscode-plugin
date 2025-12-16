@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ege } from './ege';
-import { copyDirRecursiveIfNotExist, copyIfNotExist } from './utils';
+import { copyDirRecursiveIfNotExist, copyIfNotExist, copyFileWithPrompt, copyDirRecursiveWithPrompt, replaceDirWithPrompt } from './utils';
 import { t, i18n } from './i18n';
 import { DemoOptionsManager, DemoOption, DemoCategory, DemoCategoryDisplayNames } from './demoOptions';
 
@@ -27,72 +27,93 @@ export async function setupProject(usingSource?: boolean) {
     const workspaceFolders = vscode.workspace.workspaceFolders;
 
     for (const workspaceFolder of workspaceFolders || []) {
-        /// 如果根目录没有 CMakeLists.txt, 拷贝一个过去
         const workspaceDir = workspaceFolder.uri.fsPath;
-        const cmakeListsPath = vscode.Uri.file(`${workspaceDir}/CMakeLists.txt`);
-        if (fs.existsSync(cmakeListsPath.fsPath)) {
-            ege.printInfo(t('message.cmakeListsExists'));
-        } else {
-            const cmakeListsTemplatePath = path.join(__dirname, `../cmake_template/${usingSource ? "CMakeLists_src.txt" : "CMakeLists_lib.txt"}`);
-            fs.copyFileSync(cmakeListsTemplatePath, cmakeListsPath.fsPath);
-            ege.printInfo(t('message.cmakeListsCreated'));
+        
+        // Handle CMakeLists.txt with content checking
+        const cmakeListsPath = `${workspaceDir}/CMakeLists.txt`;
+        const cmakeListsTemplatePath = path.join(__dirname, `../cmake_template/${usingSource ? "CMakeLists_src.txt" : "CMakeLists_lib.txt"}`);
+        
+        const cmakeResult = await copyFileWithPrompt(cmakeListsTemplatePath, cmakeListsPath);
+        if (cmakeResult === 'cancelled') {
+            ege.printInfo('操作已取消');
+            return;
+        }
+        
+        let overwriteAll = cmakeResult === 'overwrite-all';
+        let skipAll = cmakeResult === 'skip-all';
 
-            /// 搜索一下项目目录下是否有别的 cpp 文件, 如果没有, 则拷贝 main.cpp
-
-            const files = fs.readdirSync(workspaceDir, { encoding: "utf-8" });
-            let hasCppFile = false;
-            for (const file of files) {
-                if (file.endsWith(".cpp")) {
-                    hasCppFile = true;
-                    break;
-                }
-            }
-
-            if (!hasCppFile) {
-                /// 拷贝选中的 demo 文件
-                const sourceFile = demoOption.fileName 
-                    ? path.join(__dirname, `../cmake_template/ege_demos/${demoOption.fileName}`)
-                    : path.join(__dirname, `../cmake_template/main.cpp`);
-                
-                copyIfNotExist(sourceFile, `${workspaceDir}/main.cpp`);
-                
-                // If the demo requires image files, copy them too
-                if (demoOption.fileName === 'graph_getimage.cpp') {
-                    const demosDir = path.join(__dirname, '../cmake_template/ege_demos');
-                    const imageFiles = ['getimage.jpg', 'getimage.png'];
-                    imageFiles.forEach(imgFile => {
-                        const imgPath = path.join(demosDir, imgFile);
-                        if (fs.existsSync(imgPath)) {
-                            copyIfNotExist(imgPath, `${workspaceDir}/${imgFile}`);
-                        }
-                    });
-                }
-            } else {
-                ege.printInfo(t('message.skipCreateMainCpp'));
+        /// 搜索一下项目目录下是否有别的 cpp 文件, 如果没有, 则拷贝 main.cpp
+        const files = fs.readdirSync(workspaceDir, { encoding: "utf-8" });
+        let hasCppFile = false;
+        for (const file of files) {
+            if (file.endsWith(".cpp")) {
+                hasCppFile = true;
+                break;
             }
         }
 
-        // 递归拷贝(不覆盖) cmake_template/.vscode 目录下的所有内容到工作区根目录
-        copyDirRecursiveIfNotExist(path.join(__dirname, `../cmake_template/.vscode`), `${workspaceDir}/.vscode`);
-
-        /// 如果根目录没有 ege 目录, 拷贝一个过去
-        const egeDir = `${workspaceDir}/ege`;
-
-        if (!fs.existsSync(egeDir)) {
-            fs.mkdirpSync(egeDir);
-            ege.printInfo("ege 目录已创建!");
-
-            if (usingSource) {
-                const egeSrcDir = path.join(__dirname, "../bundle/ege_src");
-                fs.copySync(egeSrcDir, egeDir);
-            } else {
-                /// 拷贝整个 ege 目录
-                const egeLibDir = path.join(__dirname, "../bundle/ege_bundle");
-                fs.copySync(egeLibDir, egeDir);
+        if (!hasCppFile) {
+            /// 拷贝选中的 demo 文件
+            const sourceFile = demoOption.fileName 
+                ? path.join(__dirname, `../cmake_template/ege_demos/${demoOption.fileName}`)
+                : path.join(__dirname, `../cmake_template/main.cpp`);
+            
+            const mainCppResult = await copyFileWithPrompt(sourceFile, `${workspaceDir}/main.cpp`, overwriteAll, skipAll);
+            if (mainCppResult === 'cancelled') {
+                ege.printInfo('操作已取消');
+                return;
             }
-
+            if (mainCppResult === 'overwrite-all') {
+                overwriteAll = true;
+            } else if (mainCppResult === 'skip-all') {
+                skipAll = true;
+            }
+            
+            // If the demo requires image files, copy them too
+            if (demoOption.fileName === 'graph_getimage.cpp') {
+                const demosDir = path.join(__dirname, '../cmake_template/ege_demos');
+                const imageFiles = ['getimage.jpg', 'getimage.png'];
+                for (const imgFile of imageFiles) {
+                    const imgPath = path.join(demosDir, imgFile);
+                    if (fs.existsSync(imgPath)) {
+                        const imgResult = await copyFileWithPrompt(imgPath, `${workspaceDir}/${imgFile}`, overwriteAll, skipAll);
+                        if (imgResult === 'cancelled') {
+                            ege.printInfo('操作已取消');
+                            return;
+                        }
+                        if (imgResult === 'overwrite-all') {
+                            overwriteAll = true;
+                        } else if (imgResult === 'skip-all') {
+                            skipAll = true;
+                        }
+                    }
+                }
+            }
         } else {
-            ege.printInfo("ege 目录已存在, 跳过创建!");
+            ege.printInfo(t('message.skipCreateMainCpp'));
+        }
+
+        // Handle .vscode directory with prompt
+        const vscodeResult = await replaceDirWithPrompt(
+            path.join(__dirname, `../cmake_template/.vscode`),
+            `${workspaceDir}/.vscode`,
+            '.vscode'
+        );
+        if (!vscodeResult) {
+            ege.printInfo('操作已取消');
+            return;
+        }
+
+        // Handle ege directory with prompt
+        const egeDir = `${workspaceDir}/ege`;
+        const egeSrcPath = usingSource 
+            ? path.join(__dirname, "../bundle/ege_src")
+            : path.join(__dirname, "../bundle/ege_bundle");
+        
+        const egeResult = await replaceDirWithPrompt(egeSrcPath, egeDir, 'ege');
+        if (!egeResult) {
+            ege.printInfo('操作已取消');
+            return;
         }
     }
 

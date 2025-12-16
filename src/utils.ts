@@ -383,6 +383,9 @@ export function asyncRunShellCommand(command: string, args?: string[] | null, sh
     }));
 }
 
+/**
+ * Copy file if not exist. If exists, skip.
+ */
 export function copyIfNotExist(src: string, dst: string) {
     if (!fs.existsSync(dst)) {
         /// 如果中间目录不存在, 则创建
@@ -397,6 +400,89 @@ export function copyIfNotExist(src: string, dst: string) {
     }
 }
 
+/**
+ * Compare file contents
+ */
+function filesAreIdentical(file1: string, file2: string): boolean {
+    try {
+        const content1 = fs.readFileSync(file1);
+        const content2 = fs.readFileSync(file2);
+        return content1.equals(content2);
+    } catch (e) {
+        return false;
+    }
+}
+
+/**
+ * Copy file with user confirmation if content differs
+ * @returns true if file was copied or skipped (user chose not to overwrite), false if user cancelled
+ */
+export async function copyFileWithPrompt(src: string, dst: string, overwriteAll: boolean = false, skipAll: boolean = false): Promise<'copied' | 'skipped' | 'cancelled' | 'overwrite-all' | 'skip-all'> {
+    if (!fs.existsSync(dst)) {
+        /// 如果中间目录不存在, 则创建
+        const dstDir = path.dirname(dst);
+        if (!fs.existsSync(dstDir)) {
+            fs.mkdirpSync(dstDir);
+        }
+        fs.copyFileSync(src, dst);
+        ege.printInfo(`${dst} 已创建!`);
+        return 'copied';
+    }
+    
+    // File exists, check if content is identical
+    if (filesAreIdentical(src, dst)) {
+        ege.printInfo(t('message.fileContentSame', dst));
+        return 'skipped';
+    }
+    
+    // Content is different
+    ege.printInfo(t('message.fileContentDifferent', dst));
+    
+    // If skip all is set, skip
+    if (skipAll) {
+        return 'skip-all';
+    }
+    
+    // If overwrite all is set, overwrite
+    if (overwriteAll) {
+        fs.copyFileSync(src, dst);
+        ege.printInfo(`${dst} 已覆盖!`);
+        return 'overwrite-all';
+    }
+    
+    // Ask user
+    const choice = await vscode.window.showWarningMessage(
+        t('prompt.overwriteFile', path.basename(dst)),
+        { modal: true },
+        t('button.yes'),
+        t('button.no'),
+        t('button.yesToAll'),
+        t('button.noToAll')
+    );
+    
+    if (choice === t('button.yes')) {
+        fs.copyFileSync(src, dst);
+        ege.printInfo(`${dst} 已覆盖!`);
+        return 'copied';
+    } else if (choice === t('button.yesToAll')) {
+        fs.copyFileSync(src, dst);
+        ege.printInfo(`${dst} 已覆盖!`);
+        return 'overwrite-all';
+    } else if (choice === t('button.noToAll')) {
+        ege.printInfo(`${dst} 已跳过!`);
+        return 'skip-all';
+    } else if (choice === t('button.no')) {
+        ege.printInfo(`${dst} 已跳过!`);
+        return 'skipped';
+    } else {
+        // User cancelled
+        return 'cancelled';
+    }
+}
+
+/**
+ * Copy directory recursively if not exist (old behavior, no prompts)
+ */
 export function copyDirRecursiveIfNotExist(srcDir: string, dstDir: string) {
     const files = fs.readdirSync(srcDir, { encoding: 'utf-8' });
     for (const file of files) {
@@ -408,5 +494,76 @@ export function copyDirRecursiveIfNotExist(srcDir: string, dstDir: string) {
         } else {
             copyIfNotExist(srcPath, dstPath);
         }
+    }
+}
+
+/**
+ * Copy directory recursively with user confirmation for each file
+ */
+export async function copyDirRecursiveWithPrompt(srcDir: string, dstDir: string): Promise<boolean> {
+    let overwriteAll = false;
+    let skipAll = false;
+    
+    const files = fs.readdirSync(srcDir, { encoding: 'utf-8' });
+    for (const file of files) {
+        const srcPath = path.join(srcDir, file);
+        const dstPath = path.join(dstDir, file);
+        
+        if (fs.statSync(srcPath).isDirectory()) {
+            fs.ensureDirSync(dstPath);
+            const result = await copyDirRecursiveWithPrompt(srcPath, dstPath);
+            if (!result) {
+                return false; // User cancelled
+            }
+        } else {
+            const result = await copyFileWithPrompt(srcPath, dstPath, overwriteAll, skipAll);
+            if (result === 'cancelled') {
+                return false;
+            } else if (result === 'overwrite-all') {
+                overwriteAll = true;
+            } else if (result === 'skip-all') {
+                skipAll = true;
+            }
+        }
+    }
+    
+    return true;
+}
+
+/**
+ * Replace entire directory with user confirmation
+ */
+export async function replaceDirWithPrompt(srcDir: string, dstDir: string, dirName: string): Promise<boolean> {
+    if (!fs.existsSync(dstDir)) {
+        // Directory doesn't exist, just copy
+        fs.ensureDirSync(dstDir);
+        fs.copySync(srcDir, dstDir);
+        ege.printInfo(`${dirName} 目录已创建!`);
+        return true;
+    }
+    
+    // Directory exists, ask user
+    ege.printInfo(t('message.directoryExists', dirName));
+    
+    const choice = await vscode.window.showWarningMessage(
+        t('prompt.replaceDirectory', dirName),
+        { modal: true },
+        t('button.yes'),
+        t('button.no')
+    );
+    
+    if (choice === t('button.yes')) {
+        // Remove existing directory and copy
+        fs.removeSync(dstDir);
+        fs.ensureDirSync(dstDir);
+        fs.copySync(srcDir, dstDir);
+        ege.printInfo(`${dirName} 目录已替换!`);
+        return true;
+    } else if (choice === t('button.no')) {
+        ege.printInfo(`${dirName} 目录保持不变!`);
+        return true;
+    } else {
+        // User cancelled
+        return false;
     }
 }

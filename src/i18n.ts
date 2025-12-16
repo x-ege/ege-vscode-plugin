@@ -46,6 +46,14 @@ export interface LanguageStrings {
     'message.noContentInInstallDir': string;
     'message.multiInstallDirFound': string;
     'message.cleanupCacheDone': string;
+    'message.fileExists': string;
+    'message.fileContentDifferent': string;
+    'message.fileContentSame': string;
+    'message.directoryExists': string;
+    
+    // Prompt messages
+    'prompt.overwriteFile': string;
+    'prompt.replaceDirectory': string;
 
     // Configuration descriptions
     'config.updateUrl.description': string;
@@ -56,6 +64,10 @@ export interface LanguageStrings {
     'button.ok': string;
     'button.cancel': string;
     'button.retry': string;
+    'button.yes': string;
+    'button.no': string;
+    'button.yesToAll': string;
+    'button.noToAll': string;
 
     // Titles
     'title.chooseCompiler': string;
@@ -102,6 +114,14 @@ const englishStrings: LanguageStrings = {
     'message.noContentInInstallDir': 'No content in the installation dir at: {0}',
     'message.multiInstallDirFound': 'Multi installation dir found, pick the first: {0}',
     'message.cleanupCacheDone': 'Cleanup ege plugin cache - Done!',
+    'message.fileExists': 'File {0} already exists',
+    'message.fileContentDifferent': 'File {0} content is different from template',
+    'message.fileContentSame': 'File {0} content is identical to template, skipped',
+    'message.directoryExists': 'Directory {0} already exists',
+    
+    // Prompt messages
+    'prompt.overwriteFile': 'File {0} already exists and content is different. Overwrite?',
+    'prompt.replaceDirectory': 'Directory {0} already exists. Replace entire directory?',
 
     // Configuration descriptions
     'config.updateUrl.description': 'An url to get latest version of EGE (default: https://xege.org/download/ege-latest-version)',
@@ -112,6 +132,10 @@ const englishStrings: LanguageStrings = {
     'button.ok': 'OK',
     'button.cancel': 'Cancel',
     'button.retry': 'Retry',
+    'button.yes': 'Yes',
+    'button.no': 'No',
+    'button.yesToAll': 'Yes to All',
+    'button.noToAll': 'No to All',
 
     // Titles
     'title.chooseCompiler': 'EGE: Choose the specific compiler to install.',
@@ -158,6 +182,14 @@ const chineseStrings: LanguageStrings = {
     'message.noContentInInstallDir': '在安装目录中没有内容：{0}',
     'message.multiInstallDirFound': '找到多个安装目录，选择第一个：{0}',
     'message.cleanupCacheDone': '清理 ege 插件缓存 - 完成！',
+    'message.fileExists': '文件 {0} 已存在',
+    'message.fileContentDifferent': '文件 {0} 的内容与模板不同',
+    'message.fileContentSame': '文件 {0} 内容与模板相同，已跳过',
+    'message.directoryExists': '目录 {0} 已存在',
+    
+    // Prompt messages
+    'prompt.overwriteFile': '文件 {0} 已存在且内容不同，是否覆盖？',
+    'prompt.replaceDirectory': '目录 {0} 已存在，是否替换整个目录？',
 
     // Configuration descriptions
     'config.updateUrl.description': '获取最新版本 EGE 的 URL（默认：https://xege.org/download/ege-latest-version）',
@@ -168,6 +200,10 @@ const chineseStrings: LanguageStrings = {
     'button.ok': '确定',
     'button.cancel': '取消',
     'button.retry': '重试',
+    'button.yes': '是',
+    'button.no': '否',
+    'button.yesToAll': '全部是',
+    'button.noToAll': '全部否',
 
     // Titles
     'title.chooseCompiler': 'EGE: 选择要安装的特定编译器。',
