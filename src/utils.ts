@@ -415,7 +415,7 @@ function filesAreIdentical(file1: string, file2: string): boolean {
 
 /**
  * Copy file with user confirmation if content differs
- * @returns true if file was copied or skipped (user chose not to overwrite), false if user cancelled
+ * @returns 'copied' | 'skipped' | 'cancelled' | 'overwrite-all' | 'skip-all'
  */
 export async function copyFileWithPrompt(src: string, dst: string, overwriteAll: boolean = false, skipAll: boolean = false): Promise<'copied' | 'skipped' | 'cancelled' | 'overwrite-all' | 'skip-all'> {
     if (!fs.existsSync(dst)) {
@@ -499,26 +499,37 @@ export function copyDirRecursiveIfNotExist(srcDir: string, dstDir: string) {
 
 /**
  * Copy directory recursively with user confirmation for each file
+ * @param srcDir Source directory
+ * @param dstDir Destination directory
+ * @param overwriteAll Whether to overwrite all files without prompting (passed by reference via return value)
+ * @param skipAll Whether to skip all files without prompting (passed by reference via return value)
+ * @returns Object with success status and updated flags: { success: boolean, overwriteAll: boolean, skipAll: boolean }
  */
-export async function copyDirRecursiveWithPrompt(srcDir: string, dstDir: string): Promise<boolean> {
-    let overwriteAll = false;
-    let skipAll = false;
-    
+export async function copyDirRecursiveWithPrompt(
+    srcDir: string, 
+    dstDir: string, 
+    overwriteAll: boolean = false, 
+    skipAll: boolean = false
+): Promise<{ success: boolean, overwriteAll: boolean, skipAll: boolean }> {
     const files = fs.readdirSync(srcDir, { encoding: 'utf-8' });
+    
     for (const file of files) {
         const srcPath = path.join(srcDir, file);
         const dstPath = path.join(dstDir, file);
         
         if (fs.statSync(srcPath).isDirectory()) {
             fs.ensureDirSync(dstPath);
-            const result = await copyDirRecursiveWithPrompt(srcPath, dstPath);
-            if (!result) {
-                return false; // User cancelled
+            const result = await copyDirRecursiveWithPrompt(srcPath, dstPath, overwriteAll, skipAll);
+            if (!result.success) {
+                return { success: false, overwriteAll, skipAll };
             }
+            // Propagate the flags from recursive call
+            overwriteAll = result.overwriteAll;
+            skipAll = result.skipAll;
         } else {
             const result = await copyFileWithPrompt(srcPath, dstPath, overwriteAll, skipAll);
             if (result === 'cancelled') {
-                return false;
+                return { success: false, overwriteAll, skipAll };
             } else if (result === 'overwrite-all') {
                 overwriteAll = true;
             } else if (result === 'skip-all') {
@@ -527,7 +538,7 @@ export async function copyDirRecursiveWithPrompt(srcDir: string, dstDir: string)
         }
     }
     
-    return true;
+    return { success: true, overwriteAll, skipAll };
 }
 
 /**

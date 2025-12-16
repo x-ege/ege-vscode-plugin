@@ -50,6 +50,7 @@ export interface LanguageStrings {
     'message.fileContentDifferent': string;
     'message.fileContentSame': string;
     'message.directoryExists': string;
+    'message.operationCancelled': string;
     
     // Prompt messages
     'prompt.overwriteFile': string;
@@ -118,6 +119,7 @@ const englishStrings: LanguageStrings = {
     'message.fileContentDifferent': 'File {0} content is different from template',
     'message.fileContentSame': 'File {0} content is identical to template, skipped',
     'message.directoryExists': 'Directory {0} already exists',
+    'message.operationCancelled': 'Operation cancelled',
     
     // Prompt messages
     'prompt.overwriteFile': 'File {0} already exists and content is different. Overwrite?',
@@ -186,6 +188,7 @@ const chineseStrings: LanguageStrings = {
     'message.fileContentDifferent': '文件 {0} 的内容与模板不同',
     'message.fileContentSame': '文件 {0} 内容与模板相同，已跳过',
     'message.directoryExists': '目录 {0} 已存在',
+    'message.operationCancelled': '操作已取消',
     
     // Prompt messages
     'prompt.overwriteFile': '文件 {0} 已存在且内容不同，是否覆盖？',

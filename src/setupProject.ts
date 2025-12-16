@@ -35,7 +35,7 @@ export async function setupProject(usingSource?: boolean) {
         
         const cmakeResult = await copyFileWithPrompt(cmakeListsTemplatePath, cmakeListsPath);
         if (cmakeResult === 'cancelled') {
-            ege.printInfo('操作已取消');
+            ege.printInfo(t('message.operationCancelled'));
             return;
         }
         
@@ -60,7 +60,7 @@ export async function setupProject(usingSource?: boolean) {
             
             const mainCppResult = await copyFileWithPrompt(sourceFile, `${workspaceDir}/main.cpp`, overwriteAll, skipAll);
             if (mainCppResult === 'cancelled') {
-                ege.printInfo('操作已取消');
+                ege.printInfo(t('message.operationCancelled'));
                 return;
             }
             if (mainCppResult === 'overwrite-all') {
@@ -78,7 +78,7 @@ export async function setupProject(usingSource?: boolean) {
                     if (fs.existsSync(imgPath)) {
                         const imgResult = await copyFileWithPrompt(imgPath, `${workspaceDir}/${imgFile}`, overwriteAll, skipAll);
                         if (imgResult === 'cancelled') {
-                            ege.printInfo('操作已取消');
+                            ege.printInfo(t('message.operationCancelled'));
                             return;
                         }
                         if (imgResult === 'overwrite-all') {
@@ -100,7 +100,7 @@ export async function setupProject(usingSource?: boolean) {
             '.vscode'
         );
         if (!vscodeResult) {
-            ege.printInfo('操作已取消');
+            ege.printInfo(t('message.operationCancelled'));
             return;
         }
 
@@ -112,7 +112,7 @@ export async function setupProject(usingSource?: boolean) {
         
         const egeResult = await replaceDirWithPrompt(egeSrcPath, egeDir, 'ege');
         if (!egeResult) {
-            ege.printInfo('操作已取消');
+            ege.printInfo(t('message.operationCancelled'));
             return;
         }
     }
