@@ -33,7 +33,7 @@ export async function setupProject(usingSource?: boolean) {
         const cmakeListsPath = `${workspaceDir}/CMakeLists.txt`;
         const cmakeListsTemplatePath = path.join(__dirname, `../cmake_template/${usingSource ? "CMakeLists_src.txt" : "CMakeLists_lib.txt"}`);
         
-        const cmakeResult = await copyFileWithPrompt(cmakeListsTemplatePath, cmakeListsPath);
+        const cmakeResult = await copyFileWithPrompt(cmakeListsTemplatePath, cmakeListsPath, false, false, workspaceDir);
         if (cmakeResult === 'cancelled') {
             ege.printInfo(t('message.operationCancelled'));
             return;
@@ -58,7 +58,7 @@ export async function setupProject(usingSource?: boolean) {
                 ? path.join(__dirname, `../cmake_template/ege_demos/${demoOption.fileName}`)
                 : path.join(__dirname, `../cmake_template/main.cpp`);
             
-            const mainCppResult = await copyFileWithPrompt(sourceFile, `${workspaceDir}/main.cpp`, overwriteAll, skipAll);
+            const mainCppResult = await copyFileWithPrompt(sourceFile, `${workspaceDir}/main.cpp`, overwriteAll, skipAll, workspaceDir);
             if (mainCppResult === 'cancelled') {
                 ege.printInfo(t('message.operationCancelled'));
                 return;
@@ -76,7 +76,7 @@ export async function setupProject(usingSource?: boolean) {
                 for (const imgFile of imageFiles) {
                     const imgPath = path.join(demosDir, imgFile);
                     if (fs.existsSync(imgPath)) {
-                        const imgResult = await copyFileWithPrompt(imgPath, `${workspaceDir}/${imgFile}`, overwriteAll, skipAll);
+                        const imgResult = await copyFileWithPrompt(imgPath, `${workspaceDir}/${imgFile}`, overwriteAll, skipAll, workspaceDir);
                         if (imgResult === 'cancelled') {
                             ege.printInfo(t('message.operationCancelled'));
                             return;
@@ -97,7 +97,9 @@ export async function setupProject(usingSource?: boolean) {
         const vscodeResult = await replaceDirWithPrompt(
             path.join(__dirname, `../cmake_template/.vscode`),
             `${workspaceDir}/.vscode`,
-            '.vscode'
+            '.vscode',
+            overwriteAll,
+            workspaceDir
         );
         if (!vscodeResult) {
             ege.printInfo(t('message.operationCancelled'));
@@ -110,7 +112,7 @@ export async function setupProject(usingSource?: boolean) {
             ? path.join(__dirname, "../bundle/ege_src")
             : path.join(__dirname, "../bundle/ege_bundle");
         
-        const egeResult = await replaceDirWithPrompt(egeSrcPath, egeDir, 'ege');
+        const egeResult = await replaceDirWithPrompt(egeSrcPath, egeDir, 'ege', overwriteAll, workspaceDir);
         if (!egeResult) {
             ege.printInfo(t('message.operationCancelled'));
             return;

@@ -415,9 +415,20 @@ function filesAreIdentical(file1: string, file2: string): boolean {
 
 /**
  * Copy file with user confirmation if content differs
+ * @param src Source file path
+ * @param dst Destination file path
+ * @param overwriteAll If true, overwrite without prompting
+ * @param skipAll If true, skip without prompting
+ * @param workspaceDir Workspace directory for git stash (optional)
  * @returns 'copied' | 'skipped' | 'cancelled' | 'overwrite-all' | 'skip-all'
  */
-export async function copyFileWithPrompt(src: string, dst: string, overwriteAll: boolean = false, skipAll: boolean = false): Promise<'copied' | 'skipped' | 'cancelled' | 'overwrite-all' | 'skip-all'> {
+export async function copyFileWithPrompt(
+    src: string, 
+    dst: string, 
+    overwriteAll: boolean = false, 
+    skipAll: boolean = false,
+    workspaceDir?: string
+): Promise<'copied' | 'skipped' | 'cancelled' | 'overwrite-all' | 'skip-all'> {
     if (!fs.existsSync(dst)) {
         /// 如果中间目录不存在, 则创建
         const dstDir = path.dirname(dst);
@@ -445,6 +456,13 @@ export async function copyFileWithPrompt(src: string, dst: string, overwriteAll:
     
     // If overwrite all is set, overwrite
     if (overwriteAll) {
+        // Stash if git-managed
+        if (workspaceDir) {
+            const relativePath = path.relative(workspaceDir, dst);
+            if (relativePath && !relativePath.startsWith('..')) {
+                await stashFilesIfGitManaged(workspaceDir, [relativePath]);
+            }
+        }
         fs.copyFileSync(src, dst);
         ege.printInfo(`${dst} 已覆盖!`);
         return 'overwrite-all';
@@ -461,10 +479,24 @@ export async function copyFileWithPrompt(src: string, dst: string, overwriteAll:
     );
     
     if (choice === t('button.yes')) {
+        // Stash if git-managed
+        if (workspaceDir) {
+            const relativePath = path.relative(workspaceDir, dst);
+            if (relativePath && !relativePath.startsWith('..')) {
+                await stashFilesIfGitManaged(workspaceDir, [relativePath]);
+            }
+        }
         fs.copyFileSync(src, dst);
         ege.printInfo(`${dst} 已覆盖!`);
         return 'copied';
     } else if (choice === t('button.yesToAll')) {
+        // Stash if git-managed
+        if (workspaceDir) {
+            const relativePath = path.relative(workspaceDir, dst);
+            if (relativePath && !relativePath.startsWith('..')) {
+                await stashFilesIfGitManaged(workspaceDir, [relativePath]);
+            }
+        }
         fs.copyFileSync(src, dst);
         ege.printInfo(`${dst} 已覆盖!`);
         return 'overwrite-all';
@@ -503,13 +535,15 @@ export function copyDirRecursiveIfNotExist(srcDir: string, dstDir: string) {
  * @param dstDir Destination directory
  * @param overwriteAll Whether to overwrite all files without prompting (passed by reference via return value)
  * @param skipAll Whether to skip all files without prompting (passed by reference via return value)
+ * @param workspaceDir Workspace directory for git stash (optional)
  * @returns Object with success status and updated flags: { success: boolean, overwriteAll: boolean, skipAll: boolean }
  */
 export async function copyDirRecursiveWithPrompt(
     srcDir: string, 
     dstDir: string, 
     overwriteAll: boolean = false, 
-    skipAll: boolean = false
+    skipAll: boolean = false,
+    workspaceDir?: string
 ): Promise<{ success: boolean, overwriteAll: boolean, skipAll: boolean }> {
     const files = fs.readdirSync(srcDir, { encoding: 'utf-8' });
     
@@ -519,7 +553,7 @@ export async function copyDirRecursiveWithPrompt(
         
         if (fs.statSync(srcPath).isDirectory()) {
             fs.ensureDirSync(dstPath);
-            const result = await copyDirRecursiveWithPrompt(srcPath, dstPath, overwriteAll, skipAll);
+            const result = await copyDirRecursiveWithPrompt(srcPath, dstPath, overwriteAll, skipAll, workspaceDir);
             if (!result.success) {
                 return { success: false, overwriteAll, skipAll };
             }
@@ -527,7 +561,7 @@ export async function copyDirRecursiveWithPrompt(
             overwriteAll = result.overwriteAll;
             skipAll = result.skipAll;
         } else {
-            const result = await copyFileWithPrompt(srcPath, dstPath, overwriteAll, skipAll);
+            const result = await copyFileWithPrompt(srcPath, dstPath, overwriteAll, skipAll, workspaceDir);
             if (result === 'cancelled') {
                 return { success: false, overwriteAll, skipAll };
             } else if (result === 'overwrite-all') {
@@ -542,9 +576,79 @@ export async function copyDirRecursiveWithPrompt(
 }
 
 /**
- * Replace entire directory with user confirmation
+ * Check if a directory is git-managed
  */
-export async function replaceDirWithPrompt(srcDir: string, dstDir: string, dirName: string): Promise<boolean> {
+function isGitManaged(dir: string): boolean {
+    try {
+        // Check if git is available
+        const gitPath = whereis('git');
+        if (!gitPath) {
+            return false;
+        }
+        
+        // Check if directory is in a git repo
+        const result = runShellCommand('git', ['rev-parse', '--git-dir'], { cwd: dir, noErrorMsg: true });
+        return result !== null && result.exitCode === 0;
+    } catch (e) {
+        return false;
+    }
+}
+
+/**
+ * Stash files/directories before overwriting
+ * @param workspaceDir The workspace directory
+ * @param paths Paths relative to workspace to stash
+ */
+async function stashFilesIfGitManaged(workspaceDir: string, paths: string[]): Promise<void> {
+    if (!isGitManaged(workspaceDir)) {
+        return;
+    }
+    
+    try {
+        // Check if there are changes to stash
+        const statusResult = runShellCommand('git', ['status', '--porcelain', ...paths], { cwd: workspaceDir, noErrorMsg: true });
+        if (!statusResult || !statusResult.stdout || statusResult.stdout.toString().trim().length === 0) {
+            // No changes to stash
+            return;
+        }
+        
+        // Create a stash with a descriptive message
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const stashMessage = `EGE Plugin: Auto-stash before overwrite (${timestamp})`;
+        
+        // Stage the files first
+        for (const p of paths) {
+            runShellCommand('git', ['add', p], { cwd: workspaceDir, noErrorMsg: true });
+        }
+        
+        // Create the stash
+        const stashResult = runShellCommand('git', ['stash', 'push', '-m', stashMessage, '--', ...paths], { cwd: workspaceDir, noErrorMsg: true });
+        
+        if (stashResult && stashResult.exitCode === 0) {
+            ege.printInfo(`已使用 git stash 保存: ${paths.join(', ')}`);
+        }
+    } catch (e) {
+        console.error('Failed to stash files:', e);
+        // Don't fail the operation if stash fails
+    }
+}
+
+/**
+ * Replace entire directory with user confirmation
+ * @param srcDir Source directory
+ * @param dstDir Destination directory  
+ * @param dirName Display name for the directory
+ * @param overwriteAll If true, skip prompt and overwrite
+ * @param workspaceDir Workspace directory for git stash (optional)
+ * @returns true if operation succeeded or was skipped, false if cancelled
+ */
+export async function replaceDirWithPrompt(
+    srcDir: string, 
+    dstDir: string, 
+    dirName: string, 
+    overwriteAll: boolean = false,
+    workspaceDir?: string
+): Promise<boolean> {
     if (!fs.existsSync(dstDir)) {
         // Directory doesn't exist, just copy
         fs.ensureDirSync(dstDir);
@@ -553,28 +657,47 @@ export async function replaceDirWithPrompt(srcDir: string, dstDir: string, dirNa
         return true;
     }
     
-    // Directory exists, ask user
+    // Directory exists
     ege.printInfo(t('message.directoryExists', dirName));
     
-    const choice = await vscode.window.showWarningMessage(
-        t('prompt.replaceDirectory', dirName),
-        { modal: true },
-        t('button.yes'),
-        t('button.no')
-    );
+    let shouldReplace = overwriteAll;
     
-    if (choice === t('button.yes')) {
+    if (!overwriteAll) {
+        // Ask user
+        const choice = await vscode.window.showWarningMessage(
+            t('prompt.replaceDirectory', dirName),
+            { modal: true },
+            t('button.yes'),
+            t('button.no')
+        );
+        
+        if (choice === t('button.yes')) {
+            shouldReplace = true;
+        } else if (choice === t('button.no')) {
+            ege.printInfo(`${dirName} 目录保持不变!`);
+            return true;
+        } else {
+            // User cancelled
+            return false;
+        }
+    }
+    
+    if (shouldReplace) {
+        // Stash if git-managed
+        if (workspaceDir) {
+            const relativePath = path.relative(workspaceDir, dstDir);
+            if (relativePath && !relativePath.startsWith('..')) {
+                await stashFilesIfGitManaged(workspaceDir, [relativePath]);
+            }
+        }
+        
         // Remove existing directory and copy
         fs.removeSync(dstDir);
         fs.ensureDirSync(dstDir);
         fs.copySync(srcDir, dstDir);
         ege.printInfo(`${dirName} 目录已替换!`);
         return true;
-    } else if (choice === t('button.no')) {
-        ege.printInfo(`${dirName} 目录保持不变!`);
-        return true;
-    } else {
-        // User cancelled
-        return false;
     }
+    
+    return true;
 }
