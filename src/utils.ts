@@ -607,7 +607,13 @@ async function stashFilesIfGitManaged(workspaceDir: string, paths: string[]): Pr
     try {
         // Check if there are changes to stash
         const statusResult = runShellCommand('git', ['status', '--porcelain', ...paths], { cwd: workspaceDir, noErrorMsg: true });
-        if (!statusResult || !statusResult.stdout || statusResult.stdout.toString().trim().length === 0) {
+        if (!statusResult || !statusResult.stdout) {
+            // No changes to stash
+            return;
+        }
+        
+        const stdout = typeof statusResult.stdout === 'string' ? statusResult.stdout : statusResult.stdout.toString();
+        if (stdout.trim().length === 0) {
             // No changes to stash
             return;
         }
