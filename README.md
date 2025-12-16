@@ -5,6 +5,15 @@ A VSCode plugin to help the configuration of [ege](https://xege.org). Enjoy it!
 ## Features
 
 - Generate `EGE Projects` with single click
+- **31+ Demo Templates**: Choose from a variety of demo templates when creating a new project
+  - Basic: Hello World
+  - Games: Snake, Tetris, Gomoku, Typing Practice
+  - Graphics: Star animations, Clock, Lines effects, Fireworks
+  - Algorithms: A* Pathfinding, Sorting visualization, K-Means clustering, Game of Life
+  - Physics: Ball collision, Boids simulation, Wave effects
+  - Fractals: Julia Set, Mandelbrot Set
+  - Image Processing: Loading, Rotation, Transformations
+  - Camera: Camera basics, Wave effects
 - Build and run single cpp files with EGE support.(`graphics.h`)
 - Add EGE CMake Project Template for `C/C++` source.
 - Support MacOS/Linux (By `mingw-w64` and `wine`)

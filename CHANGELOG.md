@@ -4,6 +4,19 @@ All notable changes to the "ege" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## Unreleased
+
+- **New Feature**: 新增 31+ 个示例模板选择功能
+  - 创建新项目时可以从多种示例模板中选择
+  - 包含基础入门、游戏示例、图形绘制、算法可视化、物理模拟、分形与数学、图像处理、摄像头等 8 大类
+  - 支持中英文双语界面
+  - 示例包括：贪吃蛇、俄罗斯方块、五子棋、A*寻路、排序算法可视化、弹球碰撞、Julia集、Mandelbrot集等
+- **New Feature**: Added 31+ demo template selection
+  - Choose from a variety of demo templates when creating a new project
+  - Includes 8 categories: Basic, Games, Graphics, Algorithms, Physics, Fractals, Image Processing, Camera
+  - Bilingual support (Chinese and English)
+  - Demos include: Snake, Tetris, Gomoku, A* Pathfinding, Sorting visualization, Ball collision, Julia Set, Mandelbrot Set, and more
+
 ## 1.0.3
 
 - 修正 vscode 项目模板的一些小问题
