@@ -126,17 +126,18 @@ async function showDemoSelectionDialog(language: string): Promise<DemoOption | u
     categoryOrder.forEach(category => {
         const options = categoryMap.get(category);
         if (options && options.length > 0) {
-            // Add category separator
-            items.push({
-                label: '',
-                kind: vscode.QuickPickItemKind.Separator,
-                demoOption: options[0] // Placeholder
-            } as any);
+            // Add empty separator between categories
+            if (items.length > 0) {
+                items.push({
+                    label: '',
+                    kind: vscode.QuickPickItemKind.Separator
+                } as any);
+            }
             
+            // Add category label
             items.push({
                 label: categoryDisplayNames[category],
-                kind: vscode.QuickPickItemKind.Separator,
-                demoOption: options[0] // Placeholder
+                kind: vscode.QuickPickItemKind.Separator
             } as any);
             
             // Add demos in this category

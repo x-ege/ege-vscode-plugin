@@ -224,7 +224,18 @@ class DemoMetadataRegistry {
      * 获取默认的 Hello World 信息
      */
     getDefaultInfo(language: string = 'zh'): DemoInfo {
-        return this.getInfo('main.cpp', language)!;
+        const info = this.getInfo('main.cpp', language);
+        if (!info) {
+            // Fallback in case main.cpp metadata is missing
+            return {
+                title: 'Hello World',
+                description: language === 'zh' 
+                    ? '最简单的EGE程序，初始化窗口并显示' 
+                    : 'The simplest EGE program, initialize window and display',
+                category: DemoCategory.BASIC
+            };
+        }
+        return info;
     }
 }
 
