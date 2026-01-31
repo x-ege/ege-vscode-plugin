@@ -4,7 +4,7 @@ All notable changes to the "ege" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## Unreleased
+## 1.1.0
 
 - **New Feature**: 新增 31+ 个示例模板选择功能
   - 创建新项目时可以从多种示例模板中选择
@@ -16,6 +16,30 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   - Includes 8 categories: Basic, Games, Graphics, Algorithms, Physics, Fractals, Image Processing, Camera
   - Bilingual support (Chinese and English)
   - Demos include: Snake, Tetris, Gomoku, A* Pathfinding, Sorting visualization, Ball collision, Julia Set, Mandelbrot Set, and more
+- **Feature**: 智能文件覆盖保护
+  - 自动比较文件内容，相同则跳过，不同则提示用户
+  - 支持"全部是"、"全部否"批量操作
+  - Git 仓库自动创建 stash 保护现有改动
+  - 完整的中英文国际化支持
+- **Feature**: Smart file overwrite protection
+  - Automatic content comparison, skip if identical, prompt if different
+  - "Yes to All" and "No to All" batch operations
+  - Automatic git stash creation to protect existing changes
+  - Full internationalization support
+- **Improvement**: 完善 i18n 国际化系统
+  - 新增缺失的翻译字符串
+  - 修复硬编码中文字符串
+- **Improvement**: Enhanced i18n system
+  - Added missing translation keys
+  - Fixed hardcoded Chinese strings
+- **Documentation**: 移动并完善发布工作流文档
+  - 文档移至 `.github/` 目录
+  - 新增 dry-run 模式说明
+  - 新增 marketplace 版本检查机制文档
+- **Documentation**: Moved and improved release workflow documentation
+  - Moved to `.github/` directory
+  - Added dry-run mode documentation
+  - Added marketplace version check documentation
 
 ## 1.0.3
 
