@@ -29,9 +29,10 @@ jobs:
           echo "is_tag=false" >> $GITHUB_OUTPUT
           echo "is_dry_run=true" >> $GITHUB_OUTPUT
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          echo "tag=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+          # Add 'v' prefix to match release tag format
+          echo "tag=v$PACKAGE_VERSION" >> $GITHUB_OUTPUT
           echo "Triggered by master branch push (dry-run mode)"
-          echo "Using version from package.json: $PACKAGE_VERSION"
+          echo "Using version from package.json: v$PACKAGE_VERSION"
         fi
 
     - name: Validate tag format and determine release type
@@ -40,8 +41,8 @@ jobs:
         TAG="${{ steps.trigger_type.outputs.tag }}"
         IS_DRY_RUN="${{ steps.trigger_type.outputs.is_dry_run }}"
         
-        # Check if tag matches stable release pattern (e.g., 1.0.3)
-        if echo "$TAG" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+        # Check if tag matches stable release pattern (e.g., v1.0.3)
+        if echo "$TAG" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
           echo "is_stable_release=true" >> $GITHUB_OUTPUT
           echo "is_prerelease=false" >> $GITHUB_OUTPUT
           echo "should_publish=true" >> $GITHUB_OUTPUT
@@ -50,8 +51,8 @@ jobs:
           else
             echo "Tag is a stable release: $TAG"
           fi
-        # Check if tag matches pre-release pattern (e.g., 1.0.3-alpha, 1.0.3-beta, 1.0.3-rc.1)
-        elif echo "$TAG" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+-.+$'; then
+        # Check if tag matches pre-release pattern (e.g., v1.0.3-pre, v1.0.3-alpha, v1.0.3-rc.1)
+        elif echo "$TAG" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+-.+$'; then
           echo "is_stable_release=false" >> $GITHUB_OUTPUT
           echo "is_prerelease=true" >> $GITHUB_OUTPUT
           echo "should_publish=true" >> $GITHUB_OUTPUT
@@ -77,8 +78,8 @@ jobs:
       if: steps.validate_tag.outputs.should_publish == 'true'
       run: |
         TAG="${{ steps.trigger_type.outputs.tag }}"
-        # Extract the version number (e.g., 1.0.3 from 1.0.3 or 1.0.3-alpha)
-        VERSION=$(echo "$TAG" | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+')
+        # Extract the version number (e.g., 1.0.3 from v1.0.3 or v1.0.3-pre)
+        VERSION=$(echo "$TAG" | sed 's/^v//' | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+')
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "Extracted version: $VERSION"
 
