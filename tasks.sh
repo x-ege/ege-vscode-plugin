@@ -23,9 +23,9 @@ FORCE_MODE=false
 SKIP_INSTALL=false
 
 show_help() {
-    echo "Usage: $0 <TASK> [OPTIONS]"
+    echo "Usage: $0 [TASK] [OPTIONS]"
     echo ""
-    echo "Tasks:"
+    echo "Tasks (use flags):"
     echo "  -b, --build        Build the extension (create .vsix file)"
     echo "  -p, --publish      Build and publish to VS Code Marketplace"
     echo ""
@@ -145,7 +145,9 @@ get_version() {
 
 # Get default branch name
 get_default_branch() {
-    git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "master"
+    local branch
+    branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+    echo "${branch:-master}"
 }
 
 # Check and install dependencies
@@ -411,7 +413,7 @@ do_publish() {
 
     # Build
     info "Building extension..."
-    VSIX_FILE=$(do_build)
+    do_build
     VSIX_FILE=$(ls -t *.vsix 2>/dev/null | head -1)
 
     if [ -z "$VSIX_FILE" ]; then

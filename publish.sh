@@ -2,5 +2,5 @@
 # Wrapper script for backward compatibility
 # Use tasks.sh directly for more options: ./tasks.sh --help
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 exec ./tasks.sh --publish "$@"
