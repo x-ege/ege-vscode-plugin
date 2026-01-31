@@ -51,6 +51,14 @@ export interface LanguageStrings {
     'message.fileContentSame': string;
     'message.directoryExists': string;
     'message.operationCancelled': string;
+    'message.fileCreated': string;
+    'message.fileOverwritten': string;
+    'message.fileSkipped': string;
+    'message.directoryCreated': string;
+    'message.directoryUnchanged': string;
+    'message.directoryReplaced': string;
+    'message.gitStashSaved': string;
+    'message.fileExistsSkipCreation': string;
     
     // Prompt messages
     'prompt.overwriteFile': string;
@@ -120,6 +128,14 @@ const englishStrings: LanguageStrings = {
     'message.fileContentSame': 'File {0} content is identical to template, skipped',
     'message.directoryExists': 'Directory {0} already exists',
     'message.operationCancelled': 'Operation cancelled',
+    'message.fileCreated': '{0} has been created!',
+    'message.fileOverwritten': '{0} has been overwritten!',
+    'message.fileSkipped': '{0} has been skipped!',
+    'message.directoryCreated': '{0} directory has been created!',
+    'message.directoryUnchanged': '{0} directory remains unchanged!',
+    'message.directoryReplaced': '{0} directory has been replaced!',
+    'message.gitStashSaved': 'Saved using git stash: {0}',
+    'message.fileExistsSkipCreation': '{0} already exists, skipping creation!',
     
     // Prompt messages
     'prompt.overwriteFile': 'File {0} already exists and content is different. Overwrite?',
@@ -189,6 +205,14 @@ const chineseStrings: LanguageStrings = {
     'message.fileContentSame': '文件 {0} 内容与模板相同，已跳过',
     'message.directoryExists': '目录 {0} 已存在',
     'message.operationCancelled': '操作已取消',
+    'message.fileCreated': '{0} 已创建!',
+    'message.fileOverwritten': '{0} 已覆盖!',
+    'message.fileSkipped': '{0} 已跳过!',
+    'message.directoryCreated': '{0} 目录已创建!',
+    'message.directoryUnchanged': '{0} 目录保持不变!',
+    'message.directoryReplaced': '{0} 目录已替换!',
+    'message.gitStashSaved': '已使用 git stash 保存: {0}',
+    'message.fileExistsSkipCreation': '{0} 已存在, 跳过创建!',
     
     // Prompt messages
     'prompt.overwriteFile': '文件 {0} 已存在且内容不同，是否覆盖？',

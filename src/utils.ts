@@ -394,9 +394,9 @@ export function copyIfNotExist(src: string, dst: string) {
             fs.mkdirpSync(dstDir);
         }
         fs.copyFileSync(src, dst);
-        ege.printInfo(`${dst} 已创建!`);
+        ege.printInfo(t('message.fileCreated', dst));
     } else {
-        ege.printInfo(`${dst} 已存在, 跳过创建!`);
+        ege.printInfo(t('message.fileExistsSkipCreation', dst));
     }
 }
 
@@ -436,7 +436,7 @@ export async function copyFileWithPrompt(
             fs.mkdirpSync(dstDir);
         }
         fs.copyFileSync(src, dst);
-        ege.printInfo(`${dst} 已创建!`);
+        ege.printInfo(t('message.fileCreated', dst));
         return 'copied';
     }
     
@@ -464,7 +464,7 @@ export async function copyFileWithPrompt(
             }
         }
         fs.copyFileSync(src, dst);
-        ege.printInfo(`${dst} 已覆盖!`);
+        ege.printInfo(t('message.fileOverwritten', dst));
         return 'overwrite-all';
     }
     
@@ -487,7 +487,7 @@ export async function copyFileWithPrompt(
             }
         }
         fs.copyFileSync(src, dst);
-        ege.printInfo(`${dst} 已覆盖!`);
+        ege.printInfo(t('message.fileOverwritten', dst));
         return 'copied';
     } else if (choice === t('button.yesToAll')) {
         // Stash if git-managed
@@ -498,13 +498,13 @@ export async function copyFileWithPrompt(
             }
         }
         fs.copyFileSync(src, dst);
-        ege.printInfo(`${dst} 已覆盖!`);
+        ege.printInfo(t('message.fileOverwritten', dst));
         return 'overwrite-all';
     } else if (choice === t('button.noToAll')) {
-        ege.printInfo(`${dst} 已跳过!`);
+        ege.printInfo(t('message.fileSkipped', dst));
         return 'skip-all';
     } else if (choice === t('button.no')) {
-        ege.printInfo(`${dst} 已跳过!`);
+        ege.printInfo(t('message.fileSkipped', dst));
         return 'skipped';
     } else {
         // User cancelled
@@ -631,7 +631,7 @@ async function stashFilesIfGitManaged(workspaceDir: string, paths: string[]): Pr
         const stashResult = runShellCommand('git', ['stash', 'push', '-m', stashMessage, '--', ...paths], { cwd: workspaceDir, noErrorMsg: true });
         
         if (stashResult && stashResult.exitCode === 0) {
-            ege.printInfo(`已使用 git stash 保存: ${paths.join(', ')}`);
+            ege.printInfo(t('message.gitStashSaved', paths.join(', ')));
         }
     } catch (e) {
         console.error('Failed to stash files:', e);
@@ -659,7 +659,7 @@ export async function replaceDirWithPrompt(
         // Directory doesn't exist, just copy
         fs.ensureDirSync(dstDir);
         fs.copySync(srcDir, dstDir);
-        ege.printInfo(`${dirName} 目录已创建!`);
+        ege.printInfo(t('message.directoryCreated', dirName));
         return true;
     }
     
@@ -680,7 +680,7 @@ export async function replaceDirWithPrompt(
         if (choice === t('button.yes')) {
             shouldReplace = true;
         } else if (choice === t('button.no')) {
-            ege.printInfo(`${dirName} 目录保持不变!`);
+            ege.printInfo(t('message.directoryUnchanged', dirName));
             return true;
         } else {
             // User cancelled
@@ -701,7 +701,7 @@ export async function replaceDirWithPrompt(
         fs.removeSync(dstDir);
         fs.ensureDirSync(dstDir);
         fs.copySync(srcDir, dstDir);
-        ege.printInfo(`${dirName} 目录已替换!`);
+        ege.printInfo(t('message.directoryReplaced', dirName));
         return true;
     }
     
